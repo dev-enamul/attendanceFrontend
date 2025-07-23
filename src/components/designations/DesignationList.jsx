@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Briefcase } from 'lucide-react';
-import { designationsApi } from '../../api/designations';
-import { Loading } from '../common/Loading';
-import { Modal } from '../common/Modal';
-import { DesignationForm } from './DesignationForm';
+import { Briefcase, Edit2, Plus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { designationsApi } from "../../api/designations";
+import { Loading } from "../common/Loading";
+import { Modal } from "../common/Modal";
+import { DesignationForm } from "./DesignationForm";
 
 export const DesignationList = () => {
   const [designations, setDesignations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDesignation, setEditingDesignation] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
@@ -18,10 +18,12 @@ export const DesignationList = () => {
       setLoading(true);
       const response = await designationsApi.getAll();
       if (response.success) {
-        setDesignations(response.data.data);
+        setDesignations(response?.data);
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to fetch designations');
+      setError(
+        error instanceof Error ? error.message : "Failed to fetch designations"
+      );
     } finally {
       setLoading(false);
     }
@@ -44,10 +46,12 @@ export const DesignationList = () => {
   const handleDelete = async (id) => {
     try {
       await designationsApi.delete(id);
-      setDesignations(designations.filter(d => d.id !== id));
+      setDesignations(designations?.filter((d) => d.id !== id));
       setDeleteConfirm(null);
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to delete designation');
+      setError(
+        error instanceof Error ? error.message : "Failed to delete designation"
+      );
     }
   };
 
@@ -88,9 +92,9 @@ export const DesignationList = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {designations.map((designation) => (
+        {designations?.map((designation) => (
           <div
-            key={designation.id}
+            key={designation?.id}
             className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
           >
             <div className="flex items-start justify-between">
@@ -99,8 +103,10 @@ export const DesignationList = () => {
                   <Briefcase className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">{designation.name}</h3>
-                  <p className="text-sm text-gray-500">ID: {designation.id}</p>
+                  <h3 className="font-semibold text-gray-900">
+                    {designation?.name}
+                  </h3>
+                  <p className="text-sm text-gray-500">ID: {designation?.id}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-1">
@@ -111,7 +117,7 @@ export const DesignationList = () => {
                   <Edit2 className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => setDeleteConfirm(designation.id)}
+                  onClick={() => setDeleteConfirm(designation?.id)}
                   className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -119,7 +125,7 @@ export const DesignationList = () => {
               </div>
             </div>
             <div className="mt-4 text-xs text-gray-500">
-              Created: {new Date(designation.created_at).toLocaleDateString()}
+              Created: {new Date(designation?.created_at).toLocaleDateString()}
             </div>
           </div>
         ))}
@@ -128,7 +134,7 @@ export const DesignationList = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingDesignation ? 'Edit Designation' : 'Create Designation'}
+        title={editingDesignation ? "Edit Designation" : "Create Designation"}
         size="sm"
       >
         <DesignationForm
@@ -147,7 +153,8 @@ export const DesignationList = () => {
         >
           <div className="space-y-4">
             <p className="text-gray-600">
-              Are you sure you want to delete this designation? This action cannot be undone.
+              Are you sure you want to delete this designation? This action
+              cannot be undone.
             </p>
             <div className="flex space-x-3">
               <button

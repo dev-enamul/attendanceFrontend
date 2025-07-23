@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { employeesApi } from '../../api/employees';
-import { Loading } from '../common/Loading';
+import { useEffect, useState } from "react";
+import { employeesApi } from "../../api/employees";
+import { Loading } from "../common/Loading";
 
 export const EmployeeForm = ({
   employee,
@@ -9,35 +9,35 @@ export const EmployeeForm = ({
   onCancel,
 }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    designation_id: '',
-    date_of_birth: '',
-    gender: '',
-    blood_group: '',
-    marital_status: '',
-    joining_date: '',
-    salary: '',
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    designation_id: "",
+    date_of_birth: "",
+    gender: "",
+    blood_group: "",
+    marital_status: "",
+    joining_date: "",
+    salary: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (employee) {
       setFormData({
-        name: employee.name || '',
-        email: employee.email || '',
-        phone: employee.phone || '',
-        address: employee.address || '',
-        designation_id: employee.designation_id.toString() || '',
-        date_of_birth: employee.date_of_birth || '',
-        gender: employee.gender || '',
-        blood_group: employee.blood_group || '',
-        marital_status: employee.marital_status || '',
-        joining_date: employee.joining_date || '',
-        salary: employee.salary?.toString() || '',
+        name: employee?.name || "",
+        email: employee?.email || "",
+        phone: employee?.phone || "",
+        address: employee?.address || "",
+        designation_id: employee?.designation_id?.toString() || "",
+        date_of_birth: employee?.date_of_birth || "",
+        gender: employee?.gender || "",
+        blood_group: employee?.blood_group || "",
+        marital_status: employee?.marital_status || "",
+        joining_date: employee?.joining_date || "",
+        salary: employee?.salary?.toString() || "",
       });
     }
   }, [employee]);
@@ -51,31 +51,33 @@ export const EmployeeForm = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const submitData = {
         ...formData,
-        designation_id: parseInt(formData.designation_id),
-        salary: formData.salary ? parseFloat(formData.salary) : undefined,
+        designation_id: parseInt(formData?.designation_id),
+        salary: formData?.salary ? parseFloat(formData?.salary) : undefined,
       };
 
       // Remove empty strings
-      Object.keys(submitData).forEach(key => {
-        if (submitData[key] === '') {
+      Object.keys(submitData).forEach((key) => {
+        if (submitData[key] === "") {
           delete submitData[key];
         }
       });
 
       if (employee) {
-        await employeesApi.update(employee.id, submitData);
+        await employeesApi.update(employee?.id, submitData);
       } else {
         await employeesApi.create(submitData);
       }
       onSuccess();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to save employee');
+      setError(
+        error instanceof Error ? error.message : "Failed to save employee"
+      );
     } finally {
       setLoading(false);
     }
@@ -97,7 +99,7 @@ export const EmployeeForm = ({
           <input
             type="text"
             name="name"
-            value={formData.name}
+            value={formData?.name}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
@@ -111,7 +113,7 @@ export const EmployeeForm = ({
           <input
             type="email"
             name="email"
-            value={formData.email}
+            value={formData?.email}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
@@ -125,7 +127,7 @@ export const EmployeeForm = ({
           <input
             type="text"
             name="phone"
-            value={formData.phone}
+            value={formData?.phone}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
@@ -137,15 +139,15 @@ export const EmployeeForm = ({
           </label>
           <select
             name="designation_id"
-            value={formData.designation_id}
+            value={formData?.designation_id}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
           >
             <option value="">Select Designation</option>
-            {designations.map((designation) => (
-              <option key={designation.id} value={designation.id}>
-                {designation.name}
+            {designations?.map((designation) => (
+              <option key={designation?.id} value={designation?.id}>
+                {designation?.name}
               </option>
             ))}
           </select>
@@ -158,7 +160,7 @@ export const EmployeeForm = ({
           <input
             type="date"
             name="date_of_birth"
-            value={formData.date_of_birth}
+            value={formData?.date_of_birth}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
@@ -170,7 +172,7 @@ export const EmployeeForm = ({
           </label>
           <select
             name="gender"
-            value={formData.gender}
+            value={formData?.gender}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
@@ -187,7 +189,7 @@ export const EmployeeForm = ({
           </label>
           <select
             name="blood_group"
-            value={formData.blood_group}
+            value={formData?.blood_group}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
@@ -209,7 +211,7 @@ export const EmployeeForm = ({
           </label>
           <select
             name="marital_status"
-            value={formData.marital_status}
+            value={formData?.marital_status}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
@@ -228,7 +230,7 @@ export const EmployeeForm = ({
           <input
             type="date"
             name="joining_date"
-            value={formData.joining_date}
+            value={formData?.joining_date}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
@@ -241,7 +243,7 @@ export const EmployeeForm = ({
           <input
             type="number"
             name="salary"
-            value={formData.salary}
+            value={formData?.salary}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             min="0"
@@ -257,7 +259,7 @@ export const EmployeeForm = ({
         <input
           type="text"
           name="address"
-          value={formData.address}
+          value={formData?.address}
           onChange={handleChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Enter full address"
@@ -272,8 +274,10 @@ export const EmployeeForm = ({
         >
           {loading ? (
             <Loading size="sm" />
+          ) : employee ? (
+            "Update Employee"
           ) : (
-            employee ? 'Update Employee' : 'Add Employee'
+            "Add Employee"
           )}
         </button>
         <button

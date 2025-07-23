@@ -8,9 +8,9 @@ export const Sidebar = ({ isOpen, onClose }) => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/dashboard' },
-    { id: 'employee', label: 'Employees', icon: Users, path: '/employee' },
-    { id: 'designation', label: 'Designations', icon: Briefcase, path: '/designation' },
-    { id: 'attendance', label: 'Attendance', icon: Calendar, path: '/attendance' },
+    { id: 'designation', label: 'Designations', icon: Briefcase, path: '/designation' },  
+    { id: 'employee', label: 'Employees', icon: Users, path: '/employee' }, 
+    // { id: 'attendance', label: 'Attendance', icon: Calendar, path: '/attendance' },
   ];
 
   const reportItems = [
@@ -24,6 +24,8 @@ export const Sidebar = ({ isOpen, onClose }) => {
     navigate(path);
     onClose();
   };
+
+  
 
   return (
     <>

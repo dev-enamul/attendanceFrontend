@@ -64,7 +64,7 @@ export const Dashboard = () => {
 
   const todayStats = [
     {
-      title: 'Present Today',
+      title: 'Present',
       value: summary.today.present,
       icon: UserCheck,
       color: 'bg-green-500',
@@ -72,29 +72,30 @@ export const Dashboard = () => {
       textColor: 'text-green-700',
     },
     {
-      title: 'Absent Today',
+      title: 'Absent',
       value: summary.today.absent,
       icon: UserX,
+
       color: 'bg-red-500',
       bgColor: 'bg-red-50',
       textColor: 'text-red-700',
     },
     {
-      title: 'Late Today',
-      value: summary.today.late,
-      icon: Clock,
-      color: 'bg-amber-500',
-      bgColor: 'bg-amber-50',
-      textColor: 'text-amber-700',
-    },
-    {
-      title: 'On Leave',
-      value: summary.today.on_leave,
+      title: 'Off Day',
+      value: summary.today.off_day,
       icon: Calendar,
       color: 'bg-blue-500',
       bgColor: 'bg-blue-50',
       textColor: 'text-blue-700',
     },
+    {
+      title: 'Late',
+      value: summary.today.late,
+      icon: Clock,
+      color: 'bg-amber-500',
+      bgColor: 'bg-amber-50',
+      textColor: 'text-amber-700',
+    }, 
   ];
 
   return (
@@ -162,13 +163,13 @@ export const Dashboard = () => {
               <span className="font-semibold text-red-600">{summary.this_month.absent}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">Late</span>
-              <span className="font-semibold text-amber-600">{summary.this_month.late}</span>
+              <span className="text-gray-600">Off Day</span>
+              <span className="font-semibold text-blue-600">{summary.this_month.off_day}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">On Leave</span>
-              <span className="font-semibold text-blue-600">{summary.this_month.on_leave}</span>
-            </div>
+              <span className="text-gray-600">Late</span>
+              <span className="font-semibold text-amber-600">{summary.this_month.late}</span>
+            </div> 
           </div>
         </div>
 
@@ -184,13 +185,14 @@ export const Dashboard = () => {
               <span className="font-semibold text-red-600">{summary.this_year.absent}</span>
             </div>
             <div className="flex justify-between items-center">
+              <span className="text-gray-600">Off Day</span>
+              <span className="font-semibold text-blue-600">{summary.this_year.off_day}</span>
+            </div>
+            <div className="flex justify-between items-center">
               <span className="text-gray-600">Late</span>
               <span className="font-semibold text-amber-600">{summary.this_year.late}</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">On Leave</span>
-              <span className="font-semibold text-blue-600">{summary.this_year.on_leave}</span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -227,37 +229,7 @@ export const Dashboard = () => {
             </table>
           </div>
         </div>
-      )}
-
-      {/* Quick Actions */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="flex items-center space-x-3 p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors group">
-            <Users className="w-8 h-8 text-blue-600 group-hover:scale-110 transition-transform" />
-            <div className="text-left">
-              <h3 className="font-medium text-gray-900">Add Employee</h3>
-              <p className="text-sm text-gray-500">Register a new team member</p>
-            </div>
-          </button>
-          
-          <button className="flex items-center space-x-3 p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors group">
-            <Calendar className="w-8 h-8 text-green-600 group-hover:scale-110 transition-transform" />
-            <div className="text-left">
-              <h3 className="font-medium text-gray-900">Mark Attendance</h3>
-              <p className="text-sm text-gray-500">Record daily attendance</p>
-            </div>
-          </button>
-          
-          <button className="flex items-center space-x-3 p-4 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors group">
-            <TrendingUp className="w-8 h-8 text-amber-600 group-hover:scale-110 transition-transform" />
-            <div className="text-left">
-              <h3 className="font-medium text-gray-900">View Reports</h3>
-              <p className="text-sm text-gray-500">Analyze attendance data</p>
-            </div>
-          </button>
-        </div>
-      </div>
+      )} 
     </div>
   );
 };

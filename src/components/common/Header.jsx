@@ -43,9 +43,9 @@ export const Header = ({ onMenuClick }) => {
           </div>
           
           <div className="flex items-center space-x-2">
-            <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+            {/* <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
               <Settings className="w-5 h-5" />
-            </button>
+            </button> */}
             <button
               onClick={handleLogout}
               className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"

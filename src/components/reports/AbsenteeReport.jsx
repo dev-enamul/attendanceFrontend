@@ -106,13 +106,7 @@ export const AbsenteeReport = () => {
           <p className="text-gray-500 text-sm lg:text-base">Track employee absence patterns and trends</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          <button 
-            onClick={handleExportPDF}
-            className="bg-red-600 hover:bg-red-700 text-white px-3 lg:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm lg:text-base"
-          >
-            <Download className="w-4 h-4" />
-            <span>PDF</span>
-          </button>
+           
           <button 
             onClick={handleExportExcel}
             className="bg-green-600 hover:bg-green-700 text-white px-3 lg:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm lg:text-base"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Download, Search, Filter, Calendar } from 'lucide-react';
+import { Clock, Download, Search, Calendar } from 'lucide-react';
 import { reportsApi } from '../../api/reports';
 import { Loading } from '../common/Loading';
 import { Pagination } from '../common/Pagination';
@@ -34,14 +34,10 @@ export const DailyReport = () => {
 
   useEffect(() => {
     fetchReport();
-  }, [filters.page, filters.per_page]);
+  }, [filters]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value, page: 1 }));
-  };
-
-  const handleSearch = () => {
-    fetchReport();
   };
 
   const handlePageChange = (page) => {
@@ -55,7 +51,8 @@ export const DailyReport = () => {
       { header: 'In Time', key: 'in_time' },
       { header: 'Out Time', key: 'out_time' },
       { header: 'Working Hours', key: 'total_working_hour' },
-      { header: 'Status', key: 'status' }
+      { header: 'Status', key: 'status' },
+      { header: 'Logs', key: 'log' }
     ];
     exportToPDF(reportData, columns, 'Daily Attendance Report');
   };
@@ -67,7 +64,8 @@ export const DailyReport = () => {
       { header: 'In Time', key: 'in_time' },
       { header: 'Out Time', key: 'out_time' },
       { header: 'Total Working Hours', key: 'total_working_hour' },
-      { header: 'Status', key: 'status' }
+      { header: 'Status', key: 'status' },
+      { header: 'Logs', key: 'log' }
     ];
     exportToExcel(reportData, columns, 'Daily Attendance Report');
   };
@@ -104,13 +102,13 @@ export const DailyReport = () => {
           <p className="text-gray-500 text-sm lg:text-base">Daily attendance tracking and time logs</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          <button 
+          {/* <button 
             onClick={handleExportPDF}
             className="bg-red-600 hover:bg-red-700 text-white px-3 lg:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm lg:text-base"
           >
             <Download className="w-4 h-4" />
             <span>PDF</span>
-          </button>
+          </button> */}
           <button 
             onClick={handleExportExcel}
             className="bg-green-600 hover:bg-green-700 text-white px-3 lg:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm lg:text-base"
@@ -129,7 +127,7 @@ export const DailyReport = () => {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="p-4 lg:p-6 border-b border-gray-200">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <input
@@ -150,14 +148,6 @@ export const DailyReport = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
               />
             </div>
-            
-            <button 
-              onClick={handleSearch}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm lg:text-base"
-            >
-              <Filter className="w-4 h-4" />
-              <span>Apply</span>
-            </button>
           </div>
         </div>
 
@@ -171,6 +161,7 @@ export const DailyReport = () => {
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Out Time</th>
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Working Hours</th>
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Logs</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -178,11 +169,7 @@ export const DailyReport = () => {
                 <tr key={index} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="w-6 lg:w-8 h-6 lg:h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                        <span className="text-white font-semibold text-xs lg:text-sm">
-                          {record.user_name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
+                      
                       <div className="ml-2 lg:ml-3">
                         <div className="text-sm font-medium text-gray-900">{record.user_name}</div>
                       </div>
@@ -209,6 +196,9 @@ export const DailyReport = () => {
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${getStatusBadge(record.status)}`}>
                       {record.status}
                     </span>
+                  </td>
+                  <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                    <small>{record.log || '-'}</small>
                   </td>
                 </tr>
               ))}

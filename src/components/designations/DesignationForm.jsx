@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { designationsApi } from '../../api/designations';
-import { Loading } from '../common/Loading';
+import { useEffect, useState } from "react";
+import { designationsApi } from "../../api/designations";
+import { Loading } from "../common/Loading";
 
-export const DesignationForm = ({
-  designation,
-  onSuccess,
-  onCancel,
-}) => {
-  const [name, setName] = useState('');
+export const DesignationForm = ({ designation, onSuccess, onCancel }) => {
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (designation) {
@@ -19,7 +15,7 @@ export const DesignationForm = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
@@ -30,7 +26,9 @@ export const DesignationForm = ({
       }
       onSuccess();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to save designation');
+      setError(
+        error instanceof Error ? error.message : "Failed to save designation"
+      );
     } finally {
       setLoading(false);
     }
@@ -45,7 +43,10 @@ export const DesignationForm = ({
       )}
 
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="name"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Designation Name
         </label>
         <input
@@ -65,11 +66,7 @@ export const DesignationForm = ({
           disabled={loading}
           className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center"
         >
-          {loading ? (
-            <Loading size="sm" />
-          ) : (
-            designation ? 'Update' : 'Create'
-          )}
+          {loading ? <Loading size="sm" /> : designation ? "Update" : "Create"}
         </button>
         <button
           type="button"
