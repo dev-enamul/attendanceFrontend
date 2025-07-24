@@ -18,8 +18,10 @@ export const EmployeeForm = ({
     gender: "",
     blood_group: "",
     marital_status: "",
-    joining_date: "",
-    salary: "",
+    employee_id: "",
+    weekly_holiday: "7", // Default to Friday
+    office_start_time: "", // Required field
+    office_end_time: "", // Required field
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -27,17 +29,19 @@ export const EmployeeForm = ({
   useEffect(() => {
     if (employee) {
       setFormData({
-        name: employee?.name || "",
-        email: employee?.email || "",
-        phone: employee?.phone || "",
-        address: employee?.address || "",
-        designation_id: employee?.designation_id?.toString() || "",
-        date_of_birth: employee?.date_of_birth || "",
-        gender: employee?.gender || "",
-        blood_group: employee?.blood_group || "",
-        marital_status: employee?.marital_status || "",
-        joining_date: employee?.joining_date || "",
-        salary: employee?.salary?.toString() || "",
+        name: employee.name || "",
+        email: employee.email || "",
+        phone: employee.phone || "",
+        address: employee.address || "",
+        designation_id: employee.designation_id?.toString() || "",
+        date_of_birth: employee.date_of_birth || "",
+        gender: employee.gender || "",
+        blood_group: employee.blood_group || "",
+        marital_status: employee.marital_status || "",
+        employee_id: employee.employee_id || "",
+        weekly_holiday: employee.weekly_holiday?.toString() || "7",
+        office_start_time: employee.office_start_time || "",
+        office_end_time: employee.office_end_time || "",
       });
     }
   }, [employee]);
@@ -54,29 +58,51 @@ export const EmployeeForm = ({
     setError("");
     setLoading(true);
 
+    // Client-side validation for required fields
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.designation_id ||
+      !formData.employee_id ||
+      !formData.weekly_holiday ||
+      !formData.office_start_time ||
+      !formData.office_end_time
+    ) {
+      setError("Please fill in all required fields.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const submitData = {
         ...formData,
-        designation_id: parseInt(formData?.designation_id),
-        salary: formData?.salary ? parseFloat(formData?.salary) : undefined,
+        designation_id: formData.designation_id
+          ? parseInt(formData.designation_id, 10)
+          : undefined,
+        weekly_holiday: formData.weekly_holiday
+          ? parseInt(formData.weekly_holiday, 10)
+          : undefined, // Convert to integer
       };
 
-      // Remove empty strings
+      // Remove empty strings and undefined
       Object.keys(submitData).forEach((key) => {
-        if (submitData[key] === "") {
+        if (submitData[key] === "" || submitData[key] === undefined) {
           delete submitData[key];
         }
       });
 
-      if (employee) {
-        await employeesApi.update(employee?.id, submitData);
+      if (employee?.id) {
+        await employeesApi.update(employee.id, submitData);
       } else {
         await employeesApi.create(submitData);
       }
       onSuccess();
     } catch (error) {
+      console.error("Error saving employee:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to save employee"
+        error instanceof Error && error.message
+          ? error.message
+          : "Failed to save employee. Please try again."
       );
     } finally {
       setLoading(false);
@@ -92,14 +118,15 @@ export const EmployeeForm = ({
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Required Fields */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Full Name *
+            Full Name <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             name="name"
-            value={formData?.name}
+            value={formData.name}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
@@ -108,18 +135,104 @@ export const EmployeeForm = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email *
+            Email <span className="text-red-500">*</span>
           </label>
           <input
             type="email"
             name="email"
-            value={formData?.email}
+            value={formData.email}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Designation <span className="text-red-500">*</span>
+          </label>
+          <select
+            name="designation_id"
+            value={formData.designation_id}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          >
+            <option value="">Select Designation</option>
+            {Array.isArray(designations) &&
+              designations.map((designation) => (
+                <option key={designation?.id} value={designation?.id}>
+                  {designation?.name}
+                </option>
+              ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Employee ID <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            name="employee_id"
+            value={formData.employee_id}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Weekly Holiday <span className="text-red-500">*</span>
+          </label>
+          <select
+            name="weekly_holiday"
+            value={formData.weekly_holiday}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          >
+            <option value="">Select Holiday</option>
+            <option value="1">Saturday</option>
+            <option value="2">Sunday</option>
+            <option value="3">Monday</option>
+            <option value="4">Tuesday</option>
+            <option value="5">Wednesday</option>
+            <option value="6">Thursday</option>
+            <option value="7">Friday</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Office Start Time <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="time"
+            name="office_start_time"
+            value={formData.office_start_time}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Office End Time <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="time"
+            name="office_end_time"
+            value={formData.office_end_time}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          />
+        </div>
+
+        {/* Optional Fields */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Phone
@@ -127,30 +240,10 @@ export const EmployeeForm = ({
           <input
             type="text"
             name="phone"
-            value={formData?.phone}
+            value={formData.phone}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Designation *
-          </label>
-          <select
-            name="designation_id"
-            value={formData?.designation_id}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            required
-          >
-            <option value="">Select Designation</option>
-            {designations?.map((designation) => (
-              <option key={designation?.id} value={designation?.id}>
-                {designation?.name}
-              </option>
-            ))}
-          </select>
         </div>
 
         <div>
@@ -160,7 +253,7 @@ export const EmployeeForm = ({
           <input
             type="date"
             name="date_of_birth"
-            value={formData?.date_of_birth}
+            value={formData.date_of_birth}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
@@ -172,14 +265,14 @@ export const EmployeeForm = ({
           </label>
           <select
             name="gender"
-            value={formData?.gender}
+            value={formData.gender}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="others">Other</option>
           </select>
         </div>
 
@@ -189,7 +282,7 @@ export const EmployeeForm = ({
           </label>
           <select
             name="blood_group"
-            value={formData?.blood_group}
+            value={formData.blood_group}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
@@ -211,7 +304,7 @@ export const EmployeeForm = ({
           </label>
           <select
             name="marital_status"
-            value={formData?.marital_status}
+            value={formData.marital_status}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
@@ -222,36 +315,9 @@ export const EmployeeForm = ({
             <option value="Widowed">Widowed</option>
           </select>
         </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Joining Date
-          </label>
-          <input
-            type="date"
-            name="joining_date"
-            value={formData?.joining_date}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Salary
-          </label>
-          <input
-            type="number"
-            name="salary"
-            value={formData?.salary}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            min="0"
-            step="0.01"
-          />
-        </div>
       </div>
 
+      {/* Address - Full Width */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Address
@@ -259,7 +325,7 @@ export const EmployeeForm = ({
         <input
           type="text"
           name="address"
-          value={formData?.address}
+          value={formData.address}
           onChange={handleChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Enter full address"
@@ -274,7 +340,7 @@ export const EmployeeForm = ({
         >
           {loading ? (
             <Loading size="sm" />
-          ) : employee ? (
+          ) : employee?.id ? (
             "Update Employee"
           ) : (
             "Add Employee"
@@ -291,3 +357,4 @@ export const EmployeeForm = ({
     </form>
   );
 };
+
