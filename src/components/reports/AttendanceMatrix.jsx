@@ -1,7 +1,7 @@
 import { Download, Grid3X3, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { reportsApi } from "../../api/reports";
-import { exportMatrixToExcel, exportMatrixToPDF } from "../../utils/exportUtils";
+import { exportMatrixToExcel } from "../../utils/exportUtils";
 import { Loading } from "../common/Loading";
 import { Pagination } from "../common/Pagination";
 
@@ -44,7 +44,13 @@ export const AttendanceMatrix = () => {
 
   useEffect(() => {
     fetchMatrix();
-  }, [filters.page, filters.per_page, filters.name, filters.year, filters.month]);
+  }, [
+    filters.page,
+    filters.per_page,
+    filters.name,
+    filters.year,
+    filters.month,
+  ]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value, page: 1 }));
@@ -54,8 +60,102 @@ export const AttendanceMatrix = () => {
     setFilters((prev) => ({ ...prev, page }));
   };
 
-  const handleExportPDF = () => {
-    exportMatrixToPDF(matrixData, dates, "Monthly Attendance Matrix");
+  const handleExportPrint = () => {
+    if (!matrixData.length || !dates.length) {
+      alert("No data to print");
+      return;
+    }
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Failed to open print window");
+      return;
+    }
+
+    // Build table header (dates)
+    const headerCells = dates
+      .map(
+        (date) =>
+          `<th style="padding:6px 8px; text-align:center; border:1px solid #ccc;">${date}</th>`
+      )
+      .join("");
+
+    // Build table rows
+    const rows = matrixData
+      .map((employee) => {
+        const nameCell = `<td style="padding:6px 8px; border:1px solid #ccc; font-weight:bold;">${employee.employee_name}</td>`;
+
+        const statusCells = dates
+          .map((date) => {
+            const status = employee[date.toString()] || "-";
+            return `<td style="padding:6px 8px; text-align:center; border:1px solid #ccc;">${status}</td>`;
+          })
+          .join("");
+
+        return `<tr>${nameCell}${statusCells}</tr>`;
+      })
+      .join("");
+
+    const htmlContent = `
+    <html>
+    <head>
+      <title>Monthly Attendance Matrix</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          color: #333;
+        }
+        h1 {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        table {
+          border-collapse: collapse;
+          width: 100%;
+          max-width: 100%;
+        }
+        th, td {
+          border: 1px solid #ccc;
+          padding: 6px 8px;
+        }
+        th {
+          background-color: #f0f0f0;
+          text-transform: uppercase;
+          font-size: 12px;
+        }
+        tr:nth-child(even) {
+          background-color: #fafafa;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Monthly Attendance Matrix</h1>
+      <table>
+        <thead>
+          <tr>
+            <th style="padding:6px 8px; border:1px solid #ccc;">Employee</th>
+            ${headerCells}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    </body>
+    </html>
+  `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+
+    // Give browser some time to render before printing
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+      // Optionally close window after printing:
+      // printWindow.close();
+    }, 500);
   };
 
   const handleExportExcel = () => {
@@ -142,13 +242,12 @@ export const AttendanceMatrix = () => {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          {/* <button
-            onClick={handleExportPDF}
+          <button
+            onClick={handleExportPrint}
             className="bg-red-600 hover:bg-red-700 text-white px-3 lg:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm lg:text-base"
           >
-            <Download className="w-4 h-4" />
-            <span>PDF</span>
-          </button> */}
+            Print
+          </button>
           <button
             onClick={handleExportExcel}
             className="bg-green-600 hover:bg-green-700 text-white px-3 lg:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm lg:text-base"
@@ -180,7 +279,9 @@ export const AttendanceMatrix = () => {
             </div>
             <select
               value={filters.year}
-              onChange={(e) => handleFilterChange("year", parseInt(e.target.value))}
+              onChange={(e) =>
+                handleFilterChange("year", parseInt(e.target.value))
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
             >
               {years.map((year) => (
@@ -191,7 +292,9 @@ export const AttendanceMatrix = () => {
             </select>
             <select
               value={filters.month}
-              onChange={(e) => handleFilterChange("month", parseInt(e.target.value))}
+              onChange={(e) =>
+                handleFilterChange("month", parseInt(e.target.value))
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
             >
               {months.map((month) => (

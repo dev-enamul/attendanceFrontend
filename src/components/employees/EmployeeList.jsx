@@ -14,6 +14,7 @@ export const EmployeeList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [searchEmployeeId, setSearchEmployeeId] = useState("");
 
   const fetchData = async () => {
     try {
@@ -92,6 +93,17 @@ export const EmployeeList = () => {
         </button>
       </div>
 
+      {/* Search input for Employee ID */}
+      <div className="mt-4">
+        <input
+          type="text"
+          placeholder="Search by Employee ID"
+          value={searchEmployeeId}
+          onChange={(e) => setSearchEmployeeId(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 w-full max-w-xs"
+        />
+      </div>
+
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-600">{error}</p>
@@ -99,74 +111,80 @@ export const EmployeeList = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {employees?.map((employee) => (
-          <div
-            key={employee?.id}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold text-lg">
-                    {employee?.name.charAt(0).toUpperCase()}
-                  </span>
+        {employees
+          ?.filter((employee) =>
+            employee.employee_id.toString().includes(searchEmployeeId.trim())
+          )
+          .map((employee) => (
+            <div
+              key={employee?.id}
+              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                    <span className="text-white font-semibold text-lg">
+                      {employee?.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">
+                      {employee?.name}
+                    </h3>
+                    <p className="text-sm text-blue-600">
+                      {employee?.designation?.name}-{employee?.employee_id}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">
-                    {employee?.name}
-                  </h3>
-                  <p className="text-sm text-blue-600">
-                    {employee?.designation?.name}
-                  </p>
+                <div className="flex items-center space-x-1">
+                  <button
+                    onClick={() => handleEdit(employee)}
+                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    title="Edit"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setDeleteConfirm(employee?.id)}
+                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center space-x-1">
-                <button
-                  onClick={() => handleEdit(employee)}
-                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                >
-                  <Edit2 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setDeleteConfirm(employee?.id)}
-                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <Mail className="w-4 h-4" />
-                <span>{employee?.email}</span>
-              </div>
-              {employee?.phone && (
+              <div className="space-y-2">
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <Phone className="w-4 h-4" />
-                  <span>{employee?.phone}</span>
+                  <Mail className="w-4 h-4" />
+                  <span>{employee?.email}</span>
+                </div>
+                {employee?.phone && (
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <Phone className="w-4 h-4" />
+                    <span>{employee?.phone}</span>
+                  </div>
+                )}
+                {employee?.address && (
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <MapPin className="w-4 h-4" />
+                    <span className="truncate">{employee?.address}</span>
+                  </div>
+                )}
+              </div>
+
+              {employee?.salary && (
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-500">Salary</span>
+                    <span className="font-semibold text-green-600">
+                      ${employee?.salary.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
               )}
-              {employee?.address && (
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4" />
-                  <span className="truncate">{employee?.address}</span>
-                </div>
-              )}
             </div>
-
-            {employee?.salary && (
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Salary</span>
-                  <span className="font-semibold text-green-600">
-                    ${employee?.salary.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+          ))}
       </div>
 
       <Modal
