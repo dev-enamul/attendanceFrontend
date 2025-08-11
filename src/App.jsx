@@ -17,6 +17,7 @@ import { DailyReport } from "./components/reports/DailyReport";
 import { MonthlyReport } from "./components/reports/MonthlyReport";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Dashboard } from "./pages/Dashboard";
+import Branches from "./pages/Branches";
 
 const AppContent = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -45,6 +46,7 @@ const AppContent = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/employee" element={<EmployeeList />} />
             <Route path="/designation" element={<DesignationList />} />
+            <Route path="/branches" element={<Branches />} />
             <Route path="/monthly-report" element={<MonthlyReport />} />
             <Route path="/daily-report" element={<DailyReport />} />
             <Route path="/absentee-report" element={<AbsenteeReport />} />

@@ -1,4 +1,4 @@
-const BASE_URL = 'https://attendance.mmadinah.com/api';
+import { BASE_URL } from '../config';
 
 export const authApi = {
   login: async (credentials) => {

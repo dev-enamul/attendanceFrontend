@@ -10,6 +10,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
     { id: 'dashboard', label: 'Dashboard', icon: Home, path: '/dashboard' },
     { id: 'designation', label: 'Designations', icon: Briefcase, path: '/designation' },  
     { id: 'employee', label: 'Employees', icon: Users, path: '/employee' }, 
+    { id: 'branches', label: 'Branches', icon: Home, path: '/branches' }, 
     // { id: 'attendance', label: 'Attendance', icon: Calendar, path: '/attendance' },
   ];
 
