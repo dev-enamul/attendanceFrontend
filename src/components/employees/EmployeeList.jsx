@@ -1,5 +1,6 @@
 import { Edit2, Mail, MapPin, Phone, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { branchesApi } from "../../api/branches";
 import { designationsApi } from "../../api/designations";
 import { employeesApi } from "../../api/employees";
 import { Loading } from "../common/Loading";
@@ -9,26 +10,36 @@ import { EmployeeForm } from "./EmployeeForm";
 export const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [designations, setDesignations] = useState([]);
+  const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-  const [searchEmployeeId, setSearchEmployeeId] = useState("");
-
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [branch_id, setBranch_id] = useState("");
+  const [filters, setFilters] = useState({
+    name: searchKeyword ?? "",
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
+    page: 1,
+    per_page: 20,
+    branch_id,
+  });
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [employeesResponse, designationsResponse] = await Promise.all([
-        employeesApi.getAll(),
+      const [designationsResponse, branchesResponse] = await Promise.all([
         designationsApi.getAll(),
+        branchesApi.getAll(),
       ]);
 
-      if (employeesResponse.success) {
-        setEmployees(employeesResponse?.data);
-      }
       if (designationsResponse.success) {
         setDesignations(designationsResponse?.data);
+      }
+
+      if (branchesResponse.success) {
+        setBranches(branchesResponse?.data);
       }
     } catch (error) {
       setError(error instanceof Error ? error.message : "Failed to fetch data");
@@ -40,6 +51,33 @@ export const EmployeeList = () => {
   useEffect(() => {
     fetchData();
   }, []);
+  const fetchEmployees = async (params = {}) => {
+    try {
+      setLoading(true);
+      const response = await employeesApi.getAll({ ...filters, ...params });
+      if (response.success) {
+        setEmployees(response?.data);
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to fetch employees"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEmployees();
+  }, [
+    filters.page,
+    filters.per_page,
+    filters.name,
+    filters.year,
+    filters.month,
+    // searchKeyword,
+    branch_id,
+  ]);
 
   const handleCreate = () => {
     setEditingEmployee(null);
@@ -94,14 +132,30 @@ export const EmployeeList = () => {
       </div>
 
       {/* Search input for Employee ID */}
-      <div className="mt-4">
+      <div className="mt-4 flex items-center space-x-4">
         <input
           type="text"
           placeholder="Search by Employee ID"
-          value={searchEmployeeId}
-          onChange={(e) => setSearchEmployeeId(e.target.value)}
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
           className="border border-gray-300 rounded-lg px-3 py-2 w-full max-w-xs"
         />
+        <select
+          value={branch_id}
+          onChange={(e) => {
+            console.log(e.target.value);
+            setBranch_id(e.target.value);
+          }}
+          className="border border-gray-300 rounded-lg px-3 py-2 w-full max-w-xs"
+          required
+        >
+          {Array.isArray(branches) &&
+            branches.map((branch) => (
+              <option key={branch?.id} value={branch?.id}>
+                {branch?.name}
+              </option>
+            ))}
+        </select>
       </div>
 
       {error && (
@@ -111,80 +165,76 @@ export const EmployeeList = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {employees
-          ?.filter((employee) =>
-            employee.employee_id.toString().includes(searchEmployeeId.trim())
-          )
-          .map((employee) => (
-            <div
-              key={employee?.id}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                    <span className="text-white font-semibold text-lg">
-                      {employee?.name.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">
-                      {employee?.name}
-                    </h3>
-                    <p className="text-sm text-blue-600">
-                      {employee?.designation?.name}-{employee?.employee_id}
-                    </p>
-                  </div>
+        {employees?.map((employee) => (
+          <div
+            key={employee?.id}
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                  <span className="text-white font-semibold text-lg">
+                    {employee?.name.charAt(0).toUpperCase()}
+                  </span>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <button
-                    onClick={() => handleEdit(employee)}
-                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                    title="Edit"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setDeleteConfirm(employee?.id)}
-                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                <div>
+                  <h3 className="font-semibold text-gray-900">
+                    {employee?.name}
+                  </h3>
+                  <p className="text-sm text-blue-600">
+                    {employee?.designation?.name}-{employee?.employee_id}
+                  </p>
                 </div>
               </div>
+              <div className="flex items-center space-x-1">
+                <button
+                  onClick={() => handleEdit(employee)}
+                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  title="Edit"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setDeleteConfirm(employee?.id)}
+                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Delete"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
 
-              <div className="space-y-2">
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <Mail className="w-4 h-4" />
+                <span>{employee?.email}</span>
+              </div>
+              {employee?.phone && (
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <Mail className="w-4 h-4" />
-                  <span>{employee?.email}</span>
+                  <Phone className="w-4 h-4" />
+                  <span>{employee?.phone}</span>
                 </div>
-                {employee?.phone && (
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <Phone className="w-4 h-4" />
-                    <span>{employee?.phone}</span>
-                  </div>
-                )}
-                {employee?.address && (
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <MapPin className="w-4 h-4" />
-                    <span className="truncate">{employee?.address}</span>
-                  </div>
-                )}
-              </div>
-
-              {employee?.salary && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-500">Salary</span>
-                    <span className="font-semibold text-green-600">
-                      ${employee?.salary.toLocaleString()}
-                    </span>
-                  </div>
+              )}
+              {employee?.address && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <MapPin className="w-4 h-4" />
+                  <span className="truncate">{employee?.address}</span>
                 </div>
               )}
             </div>
-          ))}
+
+            {employee?.salary && (
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-500">Salary</span>
+                  <span className="font-semibold text-green-600">
+                    ${employee?.salary.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
       <Modal
@@ -196,6 +246,7 @@ export const EmployeeList = () => {
         <EmployeeForm
           employee={editingEmployee}
           designations={designations}
+          branches={branches}
           onSuccess={handleFormSuccess}
           onCancel={() => setIsModalOpen(false)}
         />

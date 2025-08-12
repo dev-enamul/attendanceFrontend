@@ -5,6 +5,7 @@ import { Loading } from "../common/Loading";
 export const EmployeeForm = ({
   employee,
   designations,
+  branches,
   onSuccess,
   onCancel,
 }) => {
@@ -14,6 +15,7 @@ export const EmployeeForm = ({
     phone: "",
     address: "",
     designation_id: "",
+    branch_id: "",
     date_of_birth: "",
     gender: "",
     blood_group: "",
@@ -34,6 +36,7 @@ export const EmployeeForm = ({
         phone: employee.phone || "",
         address: employee.address || "",
         designation_id: employee.designation_id?.toString() || "",
+        branch_id: employee.branch_id?.toString() || "",
         date_of_birth: employee.date_of_birth || "",
         gender: employee.gender || "",
         blood_group: employee.blood_group || "",
@@ -63,6 +66,7 @@ export const EmployeeForm = ({
       !formData.name ||
       !formData.email ||
       !formData.designation_id ||
+      !formData.branch_id ||
       !formData.employee_id ||
       !formData.weekly_holiday ||
       !formData.office_start_time ||
@@ -78,6 +82,9 @@ export const EmployeeForm = ({
         ...formData,
         designation_id: formData.designation_id
           ? parseInt(formData.designation_id, 10)
+          : undefined,
+        branch_id: formData.branch_id
+          ? parseInt(formData.branch_id, 10)
           : undefined,
         weekly_holiday: formData.weekly_holiday
           ? parseInt(formData.weekly_holiday, 10)
@@ -147,6 +154,26 @@ export const EmployeeForm = ({
           />
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Branch <span className="text-red-500">*</span>
+          </label>
+          <select
+            name="branch_id"
+            value={formData.branch_id}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          >
+            <option value="">Select Branch</option>
+            {Array.isArray(branches) &&
+              branches.map((branch) => (
+                <option key={branch?.id} value={branch?.id}>
+                  {branch?.name}
+                </option>
+              ))}
+          </select>
+        </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Designation <span className="text-red-500">*</span>
@@ -357,4 +384,3 @@ export const EmployeeForm = ({
     </form>
   );
 };
-
