@@ -1,21 +1,24 @@
-import { BASE_URL } from '../config';
+import { BASE_URL } from "../config";
 
 const getAuthHeaders = () => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem("authToken");
   return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
   };
 };
 
 export const branchesApi = {
-  getAll: async (search = '', per_page = 10) => {
-    const response = await fetch(`${BASE_URL}/branches?search=${search}&per_page=${per_page}`, {
-      headers: getAuthHeaders(),
-    });
+  getAll: async (search = "", per_page = 10) => {
+    const response = await fetch(
+      `${BASE_URL}/branches?search=${search}&per_page=${per_page}`,
+      {
+        headers: getAuthHeaders(),
+      }
+    );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch branches');
+      throw new Error("Failed to fetch branches");
     }
 
     return response.json();
@@ -27,7 +30,7 @@ export const branchesApi = {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch branches for select2');
+      throw new Error("Failed to fetch branches for select2");
     }
 
     return response.json();
@@ -39,7 +42,7 @@ export const branchesApi = {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch branch');
+      throw new Error("Failed to fetch branch");
     }
 
     return response.json();
@@ -47,14 +50,14 @@ export const branchesApi = {
 
   create: async (data) => {
     const response = await fetch(`${BASE_URL}/branches`, {
-      method: 'POST',
+      method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to create branch');
+      throw new Error(errorData.message || "Failed to create branch");
     }
 
     return response.json();
@@ -62,14 +65,14 @@ export const branchesApi = {
 
   update: async (id, data) => {
     const response = await fetch(`${BASE_URL}/branches/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update branch');
+      throw new Error(errorData.message || "Failed to update branch");
     }
 
     return response.json();
@@ -77,12 +80,12 @@ export const branchesApi = {
 
   delete: async (id) => {
     const response = await fetch(`${BASE_URL}/branches/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to delete branch');
+      throw new Error("Failed to delete branch");
     }
 
     return response.json();

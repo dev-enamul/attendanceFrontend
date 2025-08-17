@@ -1,5 +1,6 @@
 import { Download, Grid3X3, Search } from "lucide-react";
 import { useEffect, useState } from "react";
+import { branchesApi } from "../../api/branches";
 import { reportsApi } from "../../api/reports";
 import { exportMatrixToExcel } from "../../utils/exportUtils";
 import { Loading } from "../common/Loading";
@@ -11,13 +12,34 @@ export const AttendanceMatrix = () => {
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [branches, setBranches] = useState([]);
+  const [branch_id, setBranch_id] = useState("");
   const [filters, setFilters] = useState({
     name: "",
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
     page: 1,
     per_page: 20,
+    branch_id,
   });
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [branchesResponse] = await Promise.all([branchesApi.getAll()]);
+
+      if (branchesResponse.success) {
+        setBranches(branchesResponse?.data);
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Failed to fetch data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const fetchMatrix = async (params = {}) => {
     try {
@@ -44,13 +66,7 @@ export const AttendanceMatrix = () => {
 
   useEffect(() => {
     fetchMatrix();
-  }, [
-    filters.page,
-    filters.per_page,
-    filters.name,
-    filters.year,
-    filters.month,
-  ]);
+  }, [filters]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value, page: 1 }));
@@ -266,7 +282,7 @@ export const AttendanceMatrix = () => {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="p-4 lg:p-6 border-b border-gray-200">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <input
@@ -302,6 +318,23 @@ export const AttendanceMatrix = () => {
                   {month.label}
                 </option>
               ))}
+            </select>
+            <select
+              value={branch_id}
+              onChange={(e) => {
+                const value = e.target.value;
+                setBranch_id(value);
+                setFilters((prev) => ({ ...prev, branch_id: value }));
+              }}
+              className="border border-gray-300 rounded-lg px-3 py-2 w-full max-w-xs"
+              required
+            >
+              {Array.isArray(branches) &&
+                branches.map((branch) => (
+                  <option key={branch?.id} value={branch?.id}>
+                    {branch?.name}
+                  </option>
+                ))}
             </select>
           </div>
         </div>

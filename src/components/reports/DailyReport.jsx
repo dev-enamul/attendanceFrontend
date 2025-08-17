@@ -1,5 +1,6 @@
 import { Calendar, Clock, Download, Search } from "lucide-react";
 import { useEffect, useState } from "react";
+import { branchesApi } from "../../api/branches";
 import { reportsApi } from "../../api/reports";
 import { exportToExcel } from "../../utils/exportUtils";
 import { Loading } from "../common/Loading";
@@ -9,14 +10,36 @@ export const DailyReport = () => {
   const [reportData, setReportData] = useState([]);
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [branches, setBranches] = useState([]);
   const [error, setError] = useState("");
+  const [branch_id, setBranch_id] = useState("");
   const [filters, setFilters] = useState({
     name: "",
-    date: new Date().toISOString().split("T")[0],
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
     page: 1,
     per_page: 20,
+    branch_id,
   });
 
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [branchesResponse] = await Promise.all([branchesApi.getAll()]);
+
+      if (branchesResponse.success) {
+        setBranches(branchesResponse?.data);
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Failed to fetch data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
   const fetchReport = async (params = {}) => {
     try {
       setLoading(true);
@@ -225,7 +248,7 @@ export const DailyReport = () => {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="p-4 lg:p-6 border-b border-gray-200">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <input
@@ -246,6 +269,23 @@ export const DailyReport = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
               />
             </div>
+            <select
+              value={branch_id}
+              onChange={(e) => {
+                const value = e.target.value;
+                setBranch_id(value);
+                setFilters((prev) => ({ ...prev, branch_id: value }));
+              }}
+              className="border border-gray-300 rounded-lg px-3 py-2 w-full max-w-xs"
+              required
+            >
+              {Array.isArray(branches) &&
+                branches.map((branch) => (
+                  <option key={branch?.id} value={branch?.id}>
+                    {branch?.name}
+                  </option>
+                ))}
+            </select>
           </div>
         </div>
 

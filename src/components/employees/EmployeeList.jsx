@@ -69,15 +69,7 @@ export const EmployeeList = () => {
 
   useEffect(() => {
     fetchEmployees();
-  }, [
-    filters.page,
-    filters.per_page,
-    filters.name,
-    filters.year,
-    filters.month,
-    // searchKeyword,
-    branch_id,
-  ]);
+  }, [filters]);
 
   const handleCreate = () => {
     setEditingEmployee(null);
@@ -143,8 +135,9 @@ export const EmployeeList = () => {
         <select
           value={branch_id}
           onChange={(e) => {
-            console.log(e.target.value);
-            setBranch_id(e.target.value);
+            const value = e.target.value;
+            setBranch_id(value);
+            setFilters((prev) => ({ ...prev, branch_id: value }));
           }}
           className="border border-gray-300 rounded-lg px-3 py-2 w-full max-w-xs"
           required
