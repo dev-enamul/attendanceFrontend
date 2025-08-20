@@ -12,9 +12,9 @@ export const MonthlyReport = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [branches, setBranches] = useState([]);
-  const [branch_id, setBranch_id] = useState("");
   const [filters, setFilters] = useState({
     name: "",
+    branch_id: "",
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
     page: 1,
@@ -204,12 +204,8 @@ export const MonthlyReport = () => {
               ))}
             </select>
             <select
-              value={branch_id}
-              onChange={(e) => {
-                const value = e.target.value;
-                setBranch_id(value);
-                setFilters((prev) => ({ ...prev, branch_id: value }));
-              }}
+              value={filters.branch_id}
+              onChange={(e) => handleFilterChange("branch_id", e.target.value)}
               className="border border-gray-300 rounded-lg px-3 py-2 w-full max-w-xs"
               required
             >

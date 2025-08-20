@@ -5,10 +5,12 @@ import { designationsApi } from "../../api/designations";
 import { employeesApi } from "../../api/employees";
 import { Loading } from "../common/Loading";
 import { Modal } from "../common/Modal";
+import { Pagination } from "../common/Pagination";
 import { EmployeeForm } from "./EmployeeForm";
 
 export const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
+  const [meta, setMeta] = useState(null);
   const [designations, setDesignations] = useState([]);
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ export const EmployeeList = () => {
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
     page: 1,
-    per_page: 20,
+    per_page: 21,
     branch_id,
   });
   const fetchData = async () => {
@@ -57,6 +59,7 @@ export const EmployeeList = () => {
       const response = await employeesApi.getAll({ ...filters, ...params });
       if (response.success) {
         setEmployees(response?.data);
+        setMeta(response?.meta);
       }
     } catch (error) {
       setError(
@@ -70,6 +73,10 @@ export const EmployeeList = () => {
   useEffect(() => {
     fetchEmployees();
   }, [filters]);
+
+  const handlePageChange = (page) => {
+    setFilters((prev) => ({ ...prev, page }));
+  };
 
   const handleCreate = () => {
     setEditingEmployee(null);
@@ -229,6 +236,7 @@ export const EmployeeList = () => {
           </div>
         ))}
       </div>
+      <Pagination meta={meta} onPageChange={handlePageChange} />
 
       <Modal
         isOpen={isModalOpen}

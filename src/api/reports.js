@@ -16,6 +16,7 @@ export const reportsApi = {
     if (params.year) queryParams.append("year", params.year);
     if (params.month) queryParams.append("month", params.month);
     if (params.name) queryParams.append("name", params.name);
+    if (params.branch_id) queryParams.append("branch_id", params.branch_id);
 
     const url = `${BASE_URL}/reports/monthly${
       queryParams.toString() ? "?" + queryParams.toString() : ""
