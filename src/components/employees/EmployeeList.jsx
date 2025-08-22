@@ -74,6 +74,16 @@ export const EmployeeList = () => {
     fetchEmployees();
   }, [filters]);
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setFilters((prev) => ({ ...prev, name: searchKeyword }));
+    }, 500); // 500ms debounce delay
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchKeyword]);
+
   const handlePageChange = (page) => {
     setFilters((prev) => ({ ...prev, page }));
   };
@@ -106,7 +116,7 @@ export const EmployeeList = () => {
     fetchData();
   };
 
-  if (loading) {
+  if (loading && !employees.length) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loading size="lg" text="Loading employees..." />
@@ -130,14 +140,13 @@ export const EmployeeList = () => {
         </button>
       </div>
 
-      {/* Search input for Employee ID */}
-      <div className="mt-4 flex items-center space-x-4">
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         <input
           type="text"
-          placeholder="Search by Employee ID"
+          placeholder="Search by name or id"
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 w-full max-w-xs"
+          className="border border-gray-300 rounded-lg px-3 py-2 w-full"
         />
         <select
           value={branch_id}
@@ -146,9 +155,9 @@ export const EmployeeList = () => {
             setBranch_id(value);
             setFilters((prev) => ({ ...prev, branch_id: value }));
           }}
-          className="border border-gray-300 rounded-lg px-3 py-2 w-full max-w-xs"
-          required
+          className="border border-gray-300 rounded-lg px-3 py-2 w-full"
         >
+          <option value="">All Branch</option>
           {Array.isArray(branches) &&
             branches.map((branch) => (
               <option key={branch?.id} value={branch?.id}>
@@ -164,7 +173,7 @@ export const EmployeeList = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
         {employees?.map((employee) => (
           <div
             key={employee?.id}

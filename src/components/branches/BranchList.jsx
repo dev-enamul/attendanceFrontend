@@ -60,7 +60,7 @@ export const BranchList = () => {
     fetchData();
   };
 
-  if (loading) {
+  if (loading && !branches.length) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loading size="lg" text="Loading branches..." />
@@ -143,7 +143,7 @@ export const BranchList = () => {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className={`bg-white divide-y divide-gray-200 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
             {branches.length === 0 ? (
               <tr>
                 <td colSpan="6" className="px-6 py-4 text-center text-gray-500">

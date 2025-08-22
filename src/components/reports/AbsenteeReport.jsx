@@ -22,7 +22,10 @@ export const AbsenteeReport = () => {
   const [branch_id, setBranch_id] = useState("");
   const [filters, setFilters] = useState({
     name: "",
-    date: new Date().toISOString().split("T")[0],
+    start_date: new Date(new Date().setDate(new Date().getDate() - 7))
+      .toISOString()
+      .split("T")[0],
+    end_date: new Date().toISOString().split("T")[0],
     page: 1,
     per_page: 20,
     branch_id,
@@ -76,9 +79,7 @@ export const AbsenteeReport = () => {
     setFilters((prev) => ({ ...prev, [key]: value, page: 1 }));
   };
 
-  const handleSearch = () => {
-    fetchReport();
-  };
+  
 
   const handlePageChange = (page) => {
     setFilters((prev) => ({ ...prev, page }));
@@ -167,9 +168,31 @@ export const AbsenteeReport = () => {
               <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search by name..."
+                placeholder="Search by name or id"
                 value={filters.name}
                 onChange={(e) => handleFilterChange("name", e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
+              />
+            </div>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <input
+                type="date"
+                value={filters.start_date}
+                onChange={(e) =>
+                  handleFilterChange("start_date", e.target.value)
+                }
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
+              />
+            </div>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <input
+                type="date"
+                value={filters.end_date}
+                onChange={(e) =>
+                  handleFilterChange("end_date", e.target.value)
+                }
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
               />
             </div>
@@ -180,9 +203,9 @@ export const AbsenteeReport = () => {
                 setBranch_id(value);
                 setFilters((prev) => ({ ...prev, branch_id: value }));
               }}
-              className="border border-gray-300 rounded-lg px-3 py-2 w-full max-w-xs"
-              required
+              className="border border-gray-300 rounded-lg px-3 py-2 w-full"
             >
+              <option value="">All Branch</option>
               {Array.isArray(branches) &&
                 branches.map((branch) => (
                   <option key={branch?.id} value={branch?.id}>
@@ -190,23 +213,6 @@ export const AbsenteeReport = () => {
                   </option>
                 ))}
             </select>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-              <input
-                type="date"
-                value={filters.date}
-                onChange={(e) => handleFilterChange("date", e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
-              />
-            </div>
-
-            <button
-              onClick={handleSearch}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm lg:text-base"
-            >
-              <Filter className="w-4 h-4" />
-              <span>Apply</span>
-            </button>
           </div>
         </div>
 
@@ -234,7 +240,7 @@ export const AbsenteeReport = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className={`bg-white divide-y divide-gray-200 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
               {reportData.map((employee, index) => {
                 const alertLevel = getAlertLevel(
                   employee.continuous_absent_days

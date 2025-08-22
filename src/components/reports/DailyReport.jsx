@@ -15,8 +15,8 @@ export const DailyReport = () => {
   const [branch_id, setBranch_id] = useState("");
   const [filters, setFilters] = useState({
     name: "",
-    year: new Date().getFullYear(),
-    month: new Date().getMonth() + 1,
+    start_date: new Date().toISOString().slice(0, 10),
+    end_date: new Date().toISOString().slice(0, 10),
     page: 1,
     per_page: 20,
     branch_id,
@@ -85,7 +85,7 @@ export const DailyReport = () => {
       { header: "Out Time", key: "out_time" },
       { header: "Working Hours", key: "total_working_hour" },
       { header: "Status", key: "status" },
-      { header: "Logs", key: "log" },
+      // { header: "Logs", key: "log" },
     ];
 
     const printWindow = window.open("", "_blank");
@@ -185,7 +185,7 @@ export const DailyReport = () => {
       { header: "Out Time", key: "out_time" },
       { header: "Total Working Hours", key: "total_working_hour" },
       { header: "Status", key: "status" },
-      { header: "Logs", key: "log" },
+      // { header: "Logs", key: "log" },
     ];
     exportToExcel(reportData, columns, "Daily Attendance Report");
   };
@@ -248,12 +248,12 @@ export const DailyReport = () => {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="p-4 lg:p-6 border-b border-gray-200">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search by name..."
+                placeholder="Search by name or id"
                 value={filters.name}
                 onChange={(e) => handleFilterChange("name", e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
@@ -264,8 +264,18 @@ export const DailyReport = () => {
               <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <input
                 type="date"
-                value={filters.date}
-                onChange={(e) => handleFilterChange("date", e.target.value)}
+                value={filters.start_date}
+                onChange={(e) => handleFilterChange("start_date", e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
+              />
+            </div>
+
+            <div className="relative">
+              <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <input
+                type="date"
+                value={filters.end_date}
+                onChange={(e) => handleFilterChange("end_date", e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
               />
             </div>
@@ -276,9 +286,9 @@ export const DailyReport = () => {
                 setBranch_id(value);
                 setFilters((prev) => ({ ...prev, branch_id: value }));
               }}
-              className="border border-gray-300 rounded-lg px-3 py-2 w-full max-w-xs"
-              required
+              className="border border-gray-300 rounded-lg px-3 py-2 w-full"
             >
+              <option value="">All Branch</option>
               {Array.isArray(branches) &&
                 branches.map((branch) => (
                   <option key={branch?.id} value={branch?.id}>
@@ -311,12 +321,12 @@ export const DailyReport = () => {
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {/* <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Logs
-                </th>
+                </th> */}
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className={`bg-white divide-y divide-gray-200 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
               {reportData.map((record, index) => (
                 <tr key={index} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
@@ -354,9 +364,9 @@ export const DailyReport = () => {
                       {record.status}
                     </span>
                   </td>
-                  <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                  {/* <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
                     <small>{record.log || "-"}</small>
-                  </td>
+                  </td> */}
                 </tr>
               ))}
             </tbody>

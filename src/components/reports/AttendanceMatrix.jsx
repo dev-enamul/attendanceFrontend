@@ -287,7 +287,7 @@ export const AttendanceMatrix = () => {
               <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search by name..."
+                placeholder="Search by name or id"
                 value={filters.name}
                 onChange={(e) => handleFilterChange("name", e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
@@ -326,9 +326,9 @@ export const AttendanceMatrix = () => {
                 setBranch_id(value);
                 setFilters((prev) => ({ ...prev, branch_id: value }));
               }}
-              className="border border-gray-300 rounded-lg px-3 py-2 w-full max-w-xs"
-              required
+              className="border border-gray-300 rounded-lg px-3 py-2 w-full"
             >
+              <option value="">All Branch</option>
               {Array.isArray(branches) &&
                 branches.map((branch) => (
                   <option key={branch?.id} value={branch?.id}>
@@ -356,7 +356,7 @@ export const AttendanceMatrix = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className={`bg-white divide-y divide-gray-200 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
               {matrixData.map((employee, index) => (
                 <tr key={index} className="hover:bg-gray-50 transition-colors">
                   <td className="px-3 lg:px-4 py-3 whitespace-nowrap sticky left-0 bg-white z-10 border-r border-gray-200">

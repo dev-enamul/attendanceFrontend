@@ -61,7 +61,7 @@ export const DesignationList = () => {
     fetchDesignations();
   };
 
-  if (loading) {
+  if (loading && !designations.length) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loading size="lg" text="Loading designations..." />
@@ -91,7 +91,7 @@ export const DesignationList = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
         {designations?.map((designation) => (
           <div
             key={designation?.id}
