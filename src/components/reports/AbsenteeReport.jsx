@@ -250,7 +250,7 @@ export const AbsenteeReport = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center">
+                    {/* <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           employee.continuous_absent_days > 0
@@ -260,7 +260,7 @@ export const AbsenteeReport = () => {
                       >
                         {employee.continuous_absent_days} days
                       </span>
-                    </td>
+                    </td> */}
                     <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
                       {employee.this_week_absent}
                     </td>
@@ -270,7 +270,7 @@ export const AbsenteeReport = () => {
                     <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
                       {employee.this_year_absent}
                     </td>
-                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center">
+                    {/* <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center">
                       <div
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getAlertColor(
                           alertLevel
@@ -281,7 +281,7 @@ export const AbsenteeReport = () => {
                         )}
                         <span className="capitalize">{alertLevel}</span>
                       </div>
-                    </td>
+                    </td> */}
                   </tr>
                 );
               })}
