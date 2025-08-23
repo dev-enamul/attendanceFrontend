@@ -85,7 +85,7 @@ export const AbsenteeReport = () => {
   const handleExportPDF = () => {
     const columns = [
       { header: "Employee", key: "user_name" },
-      { header: "Continuous Absent Days", key: "continuous_absent_days" },
+      // { header: "Continuous Absent Days", key: "continuous_absent_days" },
       { header: "This Week Absent", key: "this_week_absent" },
       { header: "This Month Absent", key: "this_month_absent" },
       { header: "This Year Absent", key: "this_year_absent" },
@@ -96,7 +96,7 @@ export const AbsenteeReport = () => {
   const handleExportExcel = () => {
     const columns = [
       { header: "Employee", key: "user_name" },
-      { header: "Continuous Absent Days", key: "continuous_absent_days" },
+      // { header: "Continuous Absent Days", key: "continuous_absent_days" },
       { header: "This Week Absent", key: "this_week_absent" },
       { header: "This Month Absent", key: "this_month_absent" },
       { header: "This Year Absent", key: "this_year_absent" },
@@ -209,9 +209,9 @@ export const AbsenteeReport = () => {
                 <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Employee
                 </th>
-                <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {/* <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Continuous Absent
-                </th>
+                </th> */}
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   This Week
                 </th>
@@ -221,9 +221,9 @@ export const AbsenteeReport = () => {
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   This Year
                 </th>
-                <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {/* <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Alert Level
-                </th>
+                </th> */}
               </tr>
             </thead>
             <tbody className={`bg-white divide-y divide-gray-200 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
