@@ -5,7 +5,7 @@ const getAuthHeaders = () => {
   return {
     'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json',
-  };
+  };  
 };
 
 export const dashboardApi = {

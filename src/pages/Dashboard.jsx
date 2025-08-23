@@ -1,7 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { Users, UserCheck, UserX, Clock, TrendingUp, Calendar, AlertTriangle } from 'lucide-react';
 import { dashboardApi } from '../api/dashboard';
 import { Loading } from '../components/common/Loading';
+import ThisMonthChart from '../components/dashboard/ThisMonthChart';
+import ThisYearChart from '../components/dashboard/ThisYearChart';
+import RecentAttendanceTrendChart from '../components/dashboard/RecentAttendanceTrendChart';
 
 export const Dashboard = () => {
   const [summary, setSummary] = useState(null);
@@ -153,47 +157,12 @@ export const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">This Month</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Present</span>
-              <span className="font-semibold text-green-600">{summary.this_month.present}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Absent</span>
-              <span className="font-semibold text-red-600">{summary.this_month.absent}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Off Day</span>
-              <span className="font-semibold text-blue-600">{summary.this_month.off_day}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Late</span>
-              <span className="font-semibold text-amber-600">{summary.this_month.late}</span>
-            </div> 
-          </div>
+          <ThisMonthChart data={summary.this_month} />
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">This Year</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Present</span>
-              <span className="font-semibold text-green-600">{summary.this_year.present}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Absent</span>
-              <span className="font-semibold text-red-600">{summary.this_year.absent}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Off Day</span>
-              <span className="font-semibold text-blue-600">{summary.this_year.off_day}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Late</span>
-              <span className="font-semibold text-amber-600">{summary.this_year.late}</span>
-            </div>
-            
-          </div>
+          <ThisYearChart data={summary.this_year} />
         </div>
       </div>
 
@@ -201,35 +170,11 @@ export const Dashboard = () => {
       {attendanceTrend.length > 0 && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Attendance Trend</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-2 font-medium text-gray-600">Date</th>
-                  <th className="text-center py-2 font-medium text-gray-600">Present</th>
-                  <th className="text-center py-2 font-medium text-gray-600">Absent</th>
-                  <th className="text-center py-2 font-medium text-gray-600">Late</th>
-                </tr>
-              </thead>
-              <tbody>
-                {attendanceTrend.slice(-7).map((trend, index) => (
-                  <tr key={index} className="border-b border-gray-100">
-                    <td className="py-2">
-                      {new Date(trend.date).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
-                    </td>
-                    <td className="text-center py-2 text-green-600 font-medium">{trend.present}</td>
-                    <td className="text-center py-2 text-red-600 font-medium">{trend.absent}</td>
-                    <td className="text-center py-2 text-amber-600 font-medium">{trend.late}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <RecentAttendanceTrendChart data={attendanceTrend} />
         </div>
       )} 
     </div>
   );
 };
+
+export default Dashboard;

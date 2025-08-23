@@ -35,8 +35,12 @@ export const EmployeeForm = ({
         email: employee.email || "",
         phone: employee.phone || "",
         address: employee.address || "",
-        designation_id: employee.designation_id?.toString() || "",
-        branch_id: employee.branch_id?.toString() || "",
+        designation_id:
+          employee.designation?.id?.toString() ||
+          employee.designation_id?.toString() ||
+          "",
+        branch_id:
+          employee.branch?.id?.toString() || employee.branch_id?.toString() || "",
         date_of_birth: employee.date_of_birth || "",
         gender: employee.gender || "",
         blood_group: employee.blood_group || "",
@@ -49,7 +53,7 @@ export const EmployeeForm = ({
     }
   }, [employee]);
 
-  const handleChange = (e) => {
+  const handleChange = (e) => { 
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -60,6 +64,7 @@ export const EmployeeForm = ({
     e.preventDefault();
     setError("");
     setLoading(true);
+ 
 
     // Client-side validation for required fields
     if (
@@ -89,7 +94,7 @@ export const EmployeeForm = ({
         weekly_holiday: formData.weekly_holiday
           ? parseInt(formData.weekly_holiday, 10)
           : undefined, // Convert to integer
-      };
+      }; 
 
       // Remove empty strings and undefined
       Object.keys(submitData).forEach((key) => {
@@ -97,6 +102,7 @@ export const EmployeeForm = ({
           delete submitData[key];
         }
       });
+ 
 
       if (employee?.id) {
         await employeesApi.update(employee.id, submitData);
