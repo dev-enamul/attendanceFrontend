@@ -76,7 +76,7 @@ export const EmployeeList = () => {
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      setFilters((prev) => ({ ...prev, name: searchKeyword }));
+      setFilters((prev) => ({ ...prev, name: searchKeyword, page: 1 }));
     }, 500); // 500ms debounce delay
 
     return () => {
@@ -153,7 +153,7 @@ export const EmployeeList = () => {
           onChange={(e) => {
             const value = e.target.value;
             setBranch_id(value);
-            setFilters((prev) => ({ ...prev, branch_id: value }));
+            setFilters((prev) => ({ ...prev, branch_id: value, page: 1 }));
           }}
           className="border border-gray-300 rounded-lg px-3 py-2 w-full"
         >

@@ -183,12 +183,8 @@ export const AbsenteeReport = () => {
               />
             </div>
             <select
-              value={branch_id}
-              onChange={(e) => {
-                const value = e.target.value;
-                setBranch_id(value);
-                setFilters((prev) => ({ ...prev, branch_id: value }));
-              }}
+              value={filters.branch_id}
+              onChange={(e) => handleFilterChange("branch_id", e.target.value)}
               className="border border-gray-300 rounded-lg px-3 py-2 w-full"
             >
               <option value="">All Branch</option>
