@@ -22,10 +22,7 @@ export const AbsenteeReport = () => {
   const [branch_id, setBranch_id] = useState("");
   const [filters, setFilters] = useState({
     name: "",
-    start_date: new Date(new Date().setDate(new Date().getDate() - 7))
-      .toISOString()
-      .split("T")[0],
-    end_date: new Date().toISOString().split("T")[0],
+    date: new Date().toISOString().split("T")[0],
     page: 1,
     per_page: 20,
     branch_id,
@@ -163,7 +160,7 @@ export const AbsenteeReport = () => {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="p-4 lg:p-6 border-b border-gray-200">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <input
@@ -178,20 +175,9 @@ export const AbsenteeReport = () => {
               <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <input
                 type="date"
-                value={filters.start_date}
+                value={filters.date}
                 onChange={(e) =>
-                  handleFilterChange("start_date", e.target.value)
-                }
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
-              />
-            </div>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-              <input
-                type="date"
-                value={filters.end_date}
-                onChange={(e) =>
-                  handleFilterChange("end_date", e.target.value)
+                  handleFilterChange("date", e.target.value)
                 }
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
               />
