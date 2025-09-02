@@ -363,7 +363,7 @@ export const AttendanceMatrix = () => {
                         </span>
                       </div>
                       <div className="ml-2">
-                        <div className="text-xs lg:text-sm font-medium text-gray-900 truncate max-w-[100px] lg:max-w-[120px]">
+                        <div className="text-xs lg:text-sm font-medium text-gray-900">
                           {employee.employee_name}
                         </div>
                       </div>
