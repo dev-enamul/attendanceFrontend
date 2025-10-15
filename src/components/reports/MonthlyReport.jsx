@@ -93,6 +93,7 @@ export const MonthlyReport = () => {
       { header: "Week Off Days", key: "week_off_days" },
       { header: "Holiday Days", key: "holiday_days" },
       { header: "Late Present Days", key: "late_present_days" },
+      { header: "Late Present Hour", key: "total_late_present_hour" },
       { header: "Early Leave Days", key: "early_leave_days" },
       { header: "Half Office Days", key: "half_office_days" },
       { header: "Working Hours", key: "working_hours" },
@@ -239,7 +240,10 @@ export const MonthlyReport = () => {
                   Week Off
                 </th>
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Late
+                  Late Day
+                </th>
+                <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Late Hour
                 </th>
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Early Leave
@@ -282,7 +286,10 @@ export const MonthlyReport = () => {
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                       {employee.late_present_days}
                     </span>
-                  </td>
+                  </td> 
+                   <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                     {employee.total_late_present_hour}
+                    </td>
                   <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
                     {employee.early_leave_days}
                   </td>
