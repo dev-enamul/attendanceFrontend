@@ -82,6 +82,123 @@ export const AbsenteeReport = () => {
     setFilters((prev) => ({ ...prev, page }));
   };
 
+  const handleExportPrint = () => {
+    if (!reportData.length) {
+      alert("No data available to print");
+      return;
+    }
+
+    const columns = [
+      { header: "Employee", key: "user_name" },
+      { header: "This Week Absent", key: "this_week_absent" },
+      { header: "This Month Absent", key: "this_month_absent" },
+      { header: "This Year Absent", key: "this_year_absent" },
+    ];
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Popup blocked. Please allow popups for this site.");
+      return;
+    }
+
+    const headerRow = columns
+      .map(
+        (col) =>
+          `<th style="border:1px solid #ccc; padding:8px; background:#f9f9f9;">${col.header}</th>`
+      )
+      .join("");
+
+    const rows = reportData
+      .map((row) => {
+        const rowHtml = columns
+          .map((col) => {
+            let value = row[col.key];
+            return `<td style="border:1px solid #ccc; padding:8px;">${ value || "-" }</td>`;
+          })
+          .join("");
+        return `<tr>${rowHtml}</tr>`;
+      })
+      .join("");
+
+    const htmlContent = `
+    <html>
+      <head>
+        <title>Absentee Report</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            color: #333;
+          }
+          h1, h2 {
+            text-align: center;
+            margin: 0 0 10px 0;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+          }
+          th, td {
+            font-size: 14px;
+          }
+          th {
+            background-color: #f9f9f9;
+          }
+          tr:nth-child(even) {
+            background-color: #fdfdfd;
+          }
+        </style>
+      </head>
+      <body>
+        <div style="text-align: center; margin-bottom: 10px;">
+          <img src="/bonafide_logo.jpeg" alt="Bonafide Logo" style="height: 40px; margin-bottom: 10px;">
+          <h1 style="margin: 0;">Bonafide</h1>
+        </div>
+        <h2 style="text-align: center; margin: 0 0 10px 0;">Absentee Report</h2>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <span>Date: ${filters.date}</span>
+          <span style="margin: 0 10px;">Branch: ${filters.branch_id ? branches.find(b => b.id === filters.branch_id)?.name : 'All Branches'}</span>
+          <span>Name: ${filters.name ? filters.name : ''}</span>
+        </div>
+        <table>
+          <thead>
+            <tr>${headerRow}</tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+        <div style="margin-top: 80px; display: flex; justify-content: space-between;">
+          <div style="text-align: center;">
+            <p style="border-top: 1px solid #000; padding-top: 5px;">MD</p>
+          </div>
+          <div style="text-align: center;">
+            <p style="border-top: 1px solid #000; padding-top: 5px;">GM</p>
+          </div>
+          <div style="text-align: center;">
+            <p style="border-top: 1px solid #000; padding-top: 5px;">AGM</p>
+          </div>
+          <div style="text-align: center;">
+            <p style="border-top: 1px solid #000; padding-top: 5px;">S&M</p>
+          </div>
+          <div style="text-align: center;">
+            <p style="border-top: 1px solid #000; padding-top: 5px;">IT</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.focus();
+
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  };
+
   const handleExportPDF = () => {
     const columns = [
       { header: "Employee", key: "user_name" },
@@ -142,6 +259,12 @@ export const AbsenteeReport = () => {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
+          <button
+            onClick={handleExportPrint}
+            className="bg-red-600 hover:bg-red-700 text-white px-3 lg:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm lg:text-base"
+          >
+            Print
+          </button>
           <button
             onClick={handleExportExcel}
             className="bg-green-600 hover:bg-green-700 text-white px-3 lg:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm lg:text-base"

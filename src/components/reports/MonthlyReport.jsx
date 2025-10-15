@@ -84,6 +84,130 @@ export const MonthlyReport = () => {
     setFilters((prev) => ({ ...prev, page }));
   };
 
+  const handleExportPrint = () => {
+    if (!reportData.length) {
+      alert("No data available to print");
+      return;
+    }
+
+    const columns = [
+      { header: "Employee", key: "user_name" },
+      { header: "Total Days", key: "total_days_in_period" },
+      { header: "Present Days", key: "present_days" },
+      { header: "Absent Days", key: "absent_days" },
+      { header: "Week Off Days", key: "week_off_days" },
+      { header: "Holiday Days", key: "holiday_days" },
+      { header: "Late Present Days", key: "late_present_days" },
+      { header: "Late Present Hour", key: "total_late_present_hour" },
+      { header: "Early Leave Days", key: "early_leave_days" },
+      { header: "Half Office Days", key: "half_office_days" },
+    ];
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Popup blocked. Please allow popups for this site.");
+      return;
+    }
+
+    const headerRow = columns
+      .map(
+        (col) =>
+          `<th style="border:1px solid #ccc; padding:8px; background:#f9f9f9;">${col.header}</th>`
+      )
+      .join("");
+
+    const rows = reportData
+      .map((row) => {
+        const rowHtml = columns
+          .map((col) => {
+            let value = row[col.key];
+            return `<td style="border:1px solid #ccc; padding:8px;">${ value || "-" }</td>`;
+          })
+          .join("");
+        return `<tr>${rowHtml}</tr>`;
+      })
+      .join("");
+
+    const htmlContent = `
+    <html>
+      <head>
+        <title>Monthly Attendance Report</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            color: #333;
+          }
+          h1 {
+            text-align: center;
+            margin-bottom: 20px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+          }
+          th, td {
+            font-size: 14px;
+          }
+          th {
+            background-color: #f9f9f9;
+          }
+          tr:nth-child(even) {
+            background-color: #fdfdfd;
+          }
+        </style>
+      </head>
+      <body>
+        <div style="text-align: center; margin-bottom: 10px;">
+          <img src="/bonafide_logo.jpeg" alt="Bonafide Logo" style="height: 40px; margin-bottom: 10px;">
+          <h1 style="margin: 0;">Bonafide</h1>
+        </div>
+        <h2 style="text-align: center; margin: 0 0 10px 0;">Monthly Attendance Report</h2>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <span>Year: ${filters.year}</span>
+          <span style="margin: 0 10px;">Month: ${months.find(m => m.value === filters.month)?.label}</span>
+          <span style="margin: 0 10px;">Branch: ${filters.branch_id ? branches.find(b => b.id === filters.branch_id)?.name : 'All Branches'}</span>
+          <span>Name: ${filters.name ? filters.name : ''}</span>
+        </div>
+        <table>
+          <thead>
+            <tr>${headerRow}</tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+        <div style="margin-top: 80px; display: flex; justify-content: space-between;">
+          <div style="text-align: center;">
+            <p style="border-top: 1px solid #000; padding-top: 5px;">MD</p>
+          </div>
+          <div style="text-align: center;">
+            <p style="border-top: 1px solid #000; padding-top: 5px;">GM</p>
+          </div>
+          <div style="text-align: center;">
+            <p style="border-top: 1px solid #000; padding-top: 5px;">AGM</p>
+          </div>
+          <div style="text-align: center;">
+            <p style="border-top: 1px solid #000; padding-top: 5px;">S&M</p>
+          </div>
+          <div style="text-align: center;">
+            <p style="border-top: 1px solid #000; padding-top: 5px;">IT</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.focus();
+
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  };
+
   const handleExportExcel = () => {
     const columns = [
       { header: "Employee", key: "user_name" },
@@ -149,6 +273,12 @@ export const MonthlyReport = () => {
             <Download className="w-4 h-4" />
             <span>PDF</span>
           </button> */}
+          <button
+            onClick={handleExportPrint}
+            className="bg-red-600 hover:bg-red-700 text-white px-3 lg:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm lg:text-base"
+          >
+            Print
+          </button>
           <button
             onClick={handleExportExcel}
             className="bg-green-600 hover:bg-green-700 text-white px-3 lg:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm lg:text-base"
@@ -240,6 +370,9 @@ export const MonthlyReport = () => {
                   Week Off
                 </th>
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Holiday Days
+                </th>
+                <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Late Day
                 </th>
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -282,6 +415,9 @@ export const MonthlyReport = () => {
                     {employee.week_off_days}
                   </td>
 
+                  <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                    {employee.holiday_days}
+                  </td>
                   <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                       {employee.late_present_days}

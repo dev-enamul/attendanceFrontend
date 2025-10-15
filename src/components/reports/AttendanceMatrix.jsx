@@ -122,9 +122,9 @@ export const AttendanceMatrix = () => {
           margin: 20px;
           color: #333;
         }
-        h1 {
+        h1, h2 {
           text-align: center;
-          margin-bottom: 20px;
+          margin: 0 0 10px 0;
         }
         table {
           border-collapse: collapse;
@@ -146,7 +146,17 @@ export const AttendanceMatrix = () => {
       </style>
     </head>
     <body>
-      <h1>Monthly Attendance Matrix</h1>
+      <div style="text-align: center; margin-bottom: 10px;">
+        <img src="/bonafide_logo.jpeg" alt="Bonafide Logo" style="height: 40px; margin-bottom: 10px;">
+        <h1 style="margin: 0;">Bonafide</h1>
+      </div>
+      <h2 style="text-align: center; margin: 0 0 10px 0;">Monthly Attendance Matrix</h2>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <span>Year: ${filters.year}</span>
+        <span style="margin: 0 10px;">Month: ${months.find(m => m.value === filters.month)?.label}</span>
+        <span style="margin: 0 10px;">Branch: ${filters.branch_id ? branches.find(b => b.id === filters.branch_id)?.name : 'All Branches'}</span>
+        <span>Name: ${filters.name ? filters.name : ''}</span>
+      </div>
       <table>
         <thead>
           <tr>
@@ -158,6 +168,23 @@ export const AttendanceMatrix = () => {
           ${rows}
         </tbody>
       </table>
+      <div style="margin-top: 80px; display: flex; justify-content: space-between;">
+        <div style="text-align: center;">
+          <p style="border-top: 1px solid #000; padding-top: 5px;">MD</p>
+        </div>
+        <div style="text-align: center;">
+          <p style="border-top: 1px solid #000; padding-top: 5px;">GM</p>
+        </div>
+        <div style="text-align: center;">
+          <p style="border-top: 1px solid #000; padding-top: 5px;">AGM</p>
+        </div>
+        <div style="text-align: center;">
+          <p style="border-top: 1px solid #000; padding-top: 5px;">S&M</p>
+        </div>
+        <div style="text-align: center;">
+          <p style="border-top: 1px solid #000; padding-top: 5px;">IT</p>
+        </div>
+      </div>
     </body>
     </html>
   `;
