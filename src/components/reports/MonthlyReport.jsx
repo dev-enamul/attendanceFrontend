@@ -95,7 +95,7 @@ export const MonthlyReport = () => {
       { header: "Total Days", key: "total_days_in_period" },
       { header: "Present Days", key: "present_days" },
       { header: "Absent Days", key: "absent_days" },
-      { header: "Week Off Days", key: "week_off_days" },
+      { header: "Weekend Days", key: "week_off_days" },
       { header: "Holiday Days", key: "holiday_days" },
       { header: "Late Present Days", key: "late_present_days" },
       { header: "Late Present Hour", key: "total_late_present_hour" },
@@ -167,8 +167,7 @@ export const MonthlyReport = () => {
         <div style="text-align: center; margin-bottom: 20px;">
           <span>Year: ${filters.year}</span>
           <span style="margin: 0 10px;">Month: ${months.find(m => m.value === filters.month)?.label}</span>
-          <span style="margin: 0 10px;">Branch: ${filters.branch_id ? branches.find(b => b.id === filters.branch_id)?.name : 'All Branches'}</span>
-          <span>Name: ${filters.name ? filters.name : ''}</span>
+          <span style="margin: 0 10px;">Branch: ${filters.branch_id ? branches.find(b => b.id == filters.branch_id)?.name : 'All Branches'}</span>
         </div>
         <table>
           <thead>
@@ -214,7 +213,7 @@ export const MonthlyReport = () => {
       { header: "Total Days", key: "total_days_in_period" },
       { header: "Present Days", key: "present_days" },
       { header: "Absent Days", key: "absent_days" },
-      { header: "Week Off Days", key: "week_off_days" },
+      { header: "Weekend Days", key: "week_off_days" },
       { header: "Holiday Days", key: "holiday_days" },
       { header: "Late Present Days", key: "late_present_days" },
       { header: "Late Present Hour", key: "total_late_present_hour" },
@@ -367,7 +366,7 @@ export const MonthlyReport = () => {
                   Absent
                 </th>
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Week Off
+                  Weekend Days
                 </th>
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Holiday Days
