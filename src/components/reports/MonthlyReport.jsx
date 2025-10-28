@@ -161,7 +161,7 @@ export const MonthlyReport = () => {
       <body>
         <div style="text-align: center; margin-bottom: 10px;">
           <img src="/bonafide_logo.jpeg" alt="Bonafide Logo" style="height: 40px; margin-bottom: 10px;">
-          <h1 style="margin: 0;">Bonafide</h1>
+    
         </div>
         <h2 style="text-align: center; margin: 0 0 10px 0;">Monthly Attendance Report</h2>
         <div style="text-align: center; margin-bottom: 20px;">
