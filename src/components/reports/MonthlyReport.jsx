@@ -1,4 +1,4 @@
-import { Download, FileText, Search } from "lucide-react";
+import { Calendar, Download, FileText, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { branchesApi } from "../../api/branches";
 import { reportsApi } from "../../api/reports";
@@ -12,11 +12,36 @@ export const MonthlyReport = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [branches, setBranches] = useState([]);
+  
+  // Get default dates: 1st of current month to today
+  const getDefaultStartDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth(); // 0-based (0 = January, 11 = December)
+    const firstDay = new Date(year, month, 1);
+    
+    // Format as YYYY-MM-DD
+    const yearStr = firstDay.getFullYear();
+    const monthStr = String(firstDay.getMonth() + 1).padStart(2, '0');
+    const dayStr = String(firstDay.getDate()).padStart(2, '0');
+    
+    return `${yearStr}-${monthStr}-${dayStr}`;
+  };
+
+  const getDefaultEndDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+  };
+
   const [filters, setFilters] = useState({
     name: "",
     branch_id: "",
-    year: new Date().getFullYear(),
-    month: new Date().getMonth() + 1,
+    start_date: getDefaultStartDate(),
+    end_date: getDefaultEndDate(),
     page: 1,
     per_page: 20,
   });
@@ -165,8 +190,8 @@ export const MonthlyReport = () => {
         </div>
         <h2 style="text-align: center; margin: 0 0 10px 0;">Monthly Attendance Report</h2>
         <div style="text-align: center; margin-bottom: 20px;">
-          <span>Year: ${filters.year}</span>
-          <span style="margin: 0 10px;">Month: ${months.find(m => m.value === filters.month)?.label}</span>
+          <span>Start Date: ${filters.start_date}</span>
+          <span style="margin: 0 10px;">End Date: ${filters.end_date}</span>
           <span style="margin: 0 10px;">Branch: ${filters.branch_id ? branches.find(b => b.id == filters.branch_id)?.name : 'All Branches'}</span>
         </div>
         <table>
@@ -225,24 +250,6 @@ export const MonthlyReport = () => {
     ];
     exportToExcel(reportData, columns, "Monthly Attendance Report");
   };
-
-  const months = [
-    { value: 1, label: "January" },
-    { value: 2, label: "February" },
-    { value: 3, label: "March" },
-    { value: 4, label: "April" },
-    { value: 5, label: "May" },
-    { value: 6, label: "June" },
-    { value: 7, label: "July" },
-    { value: 8, label: "August" },
-    { value: 9, label: "September" },
-    { value: 10, label: "October" },
-    { value: 11, label: "November" },
-    { value: 12, label: "December" },
-  ];
-
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
   if (loading && !reportData.length) {
     return (
@@ -307,32 +314,24 @@ export const MonthlyReport = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
               />
             </div>
-            <select
-              value={filters.year}
-              onChange={(e) =>
-                handleFilterChange("year", parseInt(e.target.value))
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
-            >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-            <select
-              value={filters.month}
-              onChange={(e) =>
-                handleFilterChange("month", parseInt(e.target.value))
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
-            >
-              {months.map((month) => (
-                <option key={month.value} value={month.value}>
-                  {month.label}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <input
+                type="date"
+                value={filters.start_date}
+                onChange={(e) => handleFilterChange("start_date", e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
+              />
+            </div>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <input
+                type="date"
+                value={filters.end_date}
+                onChange={(e) => handleFilterChange("end_date", e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm lg:text-base"
+              />
+            </div>
             <select
               value={filters.branch_id}
               onChange={(e) => handleFilterChange("branch_id", e.target.value)}
