@@ -9,8 +9,16 @@ const getAuthHeaders = () => {
 };
 
 export const designationsApi = {
-  getAll: async () => {
-    const response = await fetch(`${BASE_URL}/designation`, {
+  getAll: async (params = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.page) queryParams.append('page', params.page);
+    if (params.per_page) queryParams.append('per_page', params.per_page);
+
+    const url = `${BASE_URL}/designation${
+      queryParams.toString() ? '?' + queryParams.toString() : ''
+    }`;
+    
+    const response = await fetch(url, {
       headers: getAuthHeaders(),
     });
 

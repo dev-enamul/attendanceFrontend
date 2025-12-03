@@ -3,22 +3,32 @@ import { useEffect, useState } from "react";
 import { designationsApi } from "../../api/designations";
 import { Loading } from "../common/Loading";
 import { Modal } from "../common/Modal";
+import { Pagination } from "../common/Pagination";
 import { DesignationForm } from "./DesignationForm";
 
 export const DesignationList = () => {
   const [designations, setDesignations] = useState([]);
+  const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDesignation, setEditingDesignation] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [filters, setFilters] = useState({
+    page: 1,
+    per_page: 12,
+  });
 
-  const fetchDesignations = async () => {
+  const fetchDesignations = async (params = {}) => {
     try {
       setLoading(true);
-      const response = await designationsApi.getAll();
+      const response = await designationsApi.getAll({
+        ...filters,
+        ...params,
+      });
       if (response.success) {
         setDesignations(response?.data);
+        setMeta(response?.meta);
       }
     } catch (error) {
       setError(
@@ -31,7 +41,7 @@ export const DesignationList = () => {
 
   useEffect(() => {
     fetchDesignations();
-  }, []);
+  }, [filters]);
 
   const handleCreate = () => {
     setEditingDesignation(null);
@@ -43,10 +53,15 @@ export const DesignationList = () => {
     setIsModalOpen(true);
   };
 
+  const handlePageChange = (page) => {
+    setFilters((prev) => ({ ...prev, page }));
+  };
+
   const handleDelete = async (id) => {
     try {
       await designationsApi.delete(id);
-      setDesignations(designations?.filter((d) => d.id !== id));
+      // Refetch to update the list with current pagination
+      fetchDesignations();
       setDeleteConfirm(null);
     } catch (error) {
       setError(
@@ -130,6 +145,15 @@ export const DesignationList = () => {
           </div>
         ))}
       </div>
+
+      {designations.length === 0 && !loading && (
+        <div className="text-center py-12">
+          <Briefcase className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-500">No designations found</p>
+        </div>
+      )}
+
+      {meta && <Pagination meta={meta} onPageChange={handlePageChange} />}
 
       <Modal
         isOpen={isModalOpen}
