@@ -99,4 +99,19 @@ export const reportsApi = {
 
     return response.json();
   },
+
+  updateAttendanceNotes: async (id, notes) => {
+    const response = await fetch(`${BASE_URL}/attendance/${id}/notes`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ notes }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update attendance notes');
+    }
+
+    return response.json();
+  },
 };

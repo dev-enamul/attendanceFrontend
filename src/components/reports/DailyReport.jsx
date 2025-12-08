@@ -1,9 +1,10 @@
-import { Calendar, Clock, Download, Search } from "lucide-react";
+import { Calendar, Clock, Download, Edit2, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { branchesApi } from "../../api/branches";
 import { reportsApi } from "../../api/reports";
 import { exportToExcel } from "../../utils/exportUtils";
 import { Loading } from "../common/Loading";
+import { Modal } from "../common/Modal";
 import { Pagination } from "../common/Pagination";
 
 export const DailyReport = () => {
@@ -13,6 +14,10 @@ export const DailyReport = () => {
   const [branches, setBranches] = useState([]);
   const [error, setError] = useState("");
   const [branch_id, setBranch_id] = useState("");
+  const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
+  const [editingAttendance, setEditingAttendance] = useState(null);
+  const [notesValue, setNotesValue] = useState("");
+  const [updatingNotes, setUpdatingNotes] = useState(false);
   const [filters, setFilters] = useState({
     name: "",
     start_date: new Date().toISOString().slice(0, 10),
@@ -72,6 +77,40 @@ export const DailyReport = () => {
     setFilters((prev) => ({ ...prev, page }));
   };
 
+  const handleEditNotes = (record) => {
+    // Extract attendance ID from the record
+    // We need to get the attendance ID - let's check if it's in the response
+    setEditingAttendance(record);
+    setNotesValue(record.notes || "");
+    setIsNotesModalOpen(true);
+  };
+
+  const handleUpdateNotes = async () => {
+    if (!editingAttendance) return;
+
+    try {
+      setUpdatingNotes(true);
+      const response = await reportsApi.updateAttendanceNotes(
+        editingAttendance.attendance_id,
+        notesValue
+      );
+      
+      if (response.success) {
+        setIsNotesModalOpen(false);
+        setEditingAttendance(null);
+        setNotesValue("");
+        // Refresh the report data
+        fetchReport();
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to update notes"
+      );
+    } finally {
+      setUpdatingNotes(false);
+    }
+  };
+
   const handleExportPrint = () => {
     if (!reportData.length) {
       alert("No data available to print");
@@ -85,6 +124,7 @@ export const DailyReport = () => {
       { header: "Out Time", key: "out_time" },
       { header: "Working Hours", key: "total_working_hour" },
       { header: "Status", key: "status" },
+      { header: "Notes", key: "notes" },
       // { header: "Logs", key: "log" },
     ];
 
@@ -212,6 +252,7 @@ export const DailyReport = () => {
       { header: "Out Time", key: "out_time" },
       { header: "Total Working Hours", key: "total_working_hour" },
       { header: "Status", key: "status" },
+      { header: "Notes", key: "notes" },
       // { header: "Logs", key: "log" },
     ];
     exportToExcel(reportData, columns, "Daily Attendance Report");
@@ -344,6 +385,9 @@ export const DailyReport = () => {
                 <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
+                <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ minWidth: '250px' }}>
+                  Notes
+                </th>
                 {/* <th className="px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Logs
                 </th> */}
@@ -387,6 +431,46 @@ export const DailyReport = () => {
                       {record.status}
                     </span>
                   </td>
+                  <td className="px-4 lg:px-6 py-4 text-sm text-gray-900">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0" style={{ maxWidth: '400px' }}>
+                        {record.notes ? (
+                          <div className="group relative">
+                            <p 
+                              className="break-words text-gray-700 leading-relaxed"
+                              style={{
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                maxHeight: '3em',
+                                lineHeight: '1.5em'
+                              }}
+                              title={record.notes}
+                            >
+                              {record.notes}
+                            </p>
+                            {record.notes.length > 100 && (
+                              <div className="absolute left-0 top-full mt-2 hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded-lg px-4 py-3 max-w-lg break-words shadow-xl border border-gray-700">
+                                <div className="whitespace-pre-wrap">{record.notes}</div>
+                                <div className="absolute -top-1 left-4 w-2 h-2 bg-gray-900 transform rotate-45 border-l border-t border-gray-700"></div>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 italic">No notes</span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleEditNotes(record)}
+                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex-shrink-0 mt-0.5"
+                        title="Edit Notes"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
                   {/* <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
                     <small>{record.log || "-"}</small>
                   </td> */}
@@ -405,6 +489,67 @@ export const DailyReport = () => {
 
         <Pagination meta={meta} onPageChange={handlePageChange} />
       </div>
+
+      {/* Notes Edit Modal */}
+      <Modal
+        isOpen={isNotesModalOpen}
+        onClose={() => {
+          setIsNotesModalOpen(false);
+          setEditingAttendance(null);
+          setNotesValue("");
+        }}
+        title="Edit Notes"
+        size="md"
+      >
+        <div className="space-y-4">
+          {editingAttendance && (
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Employee:</span> {editingAttendance.user_name}
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Date:</span>{" "}
+                {new Date(editingAttendance.date).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </p>
+            </div>
+          )}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Notes
+            </label>
+            <textarea
+              value={notesValue}
+              onChange={(e) => setNotesValue(e.target.value)}
+              rows={5}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              placeholder="Enter notes..."
+            />
+          </div>
+          <div className="flex space-x-3 pt-4">
+            <button
+              onClick={handleUpdateNotes}
+              disabled={updatingNotes}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {updatingNotes ? "Updating..." : "Update Notes"}
+            </button>
+            <button
+              onClick={() => {
+                setIsNotesModalOpen(false);
+                setEditingAttendance(null);
+                setNotesValue("");
+              }}
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
