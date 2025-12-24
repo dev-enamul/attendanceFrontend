@@ -13,6 +13,7 @@ export const designationsApi = {
     const queryParams = new URLSearchParams();
     if (params.page) queryParams.append('page', params.page);
     if (params.per_page) queryParams.append('per_page', params.per_page);
+    if (params.search) queryParams.append('search', params.search); // Add search parameter
 
     const url = `${BASE_URL}/designation${
       queryParams.toString() ? '?' + queryParams.toString() : ''

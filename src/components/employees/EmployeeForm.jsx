@@ -1,10 +1,11 @@
+import Select from "react-select/async";
 import { useEffect, useState } from "react";
 import { employeesApi } from "../../api/employees";
+import { designationsApi } from "../../api/designations";
 import { Loading } from "../common/Loading";
 
 export const EmployeeForm = ({
   employee,
-  designations,
   branches,
   onSuccess,
   onCancel,
@@ -27,6 +28,15 @@ export const EmployeeForm = ({
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedDesignation, setSelectedDesignation] = useState(null);
+
+  const loadDesignationOptions = async (inputValue) => {
+    const response = await designationsApi.getAll({ search: inputValue });
+    return response.data.map((designation) => ({
+      value: designation.id,
+      label: designation.name,
+    }));
+  };
 
   useEffect(() => {
     if (employee) {
@@ -50,21 +60,36 @@ export const EmployeeForm = ({
         office_start_time: employee.office_start_time || "",
         office_end_time: employee.office_end_time || "",
       });
+      if (employee.designation) {
+        setSelectedDesignation({
+          value: employee.designation.id,
+          label: employee.designation.name,
+        });
+      }
+    } else {
+      setSelectedDesignation(null);
     }
   }, [employee]);
 
-  const handleChange = (e) => { 
+  const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
+  const handleDesignationChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      designation_id: selectedOption ? selectedOption.value : "",
+    });
+    setSelectedDesignation(selectedOption);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
- 
 
     // Client-side validation for required fields
     if (
@@ -94,7 +119,7 @@ export const EmployeeForm = ({
         weekly_holiday: formData.weekly_holiday
           ? parseInt(formData.weekly_holiday, 10)
           : undefined, // Convert to integer
-      }; 
+      };
 
       // Remove empty strings and undefined
       Object.keys(submitData).forEach((key) => {
@@ -102,7 +127,6 @@ export const EmployeeForm = ({
           delete submitData[key];
         }
       });
- 
 
       if (employee?.id) {
         await employeesApi.update(employee.id, submitData);
@@ -183,21 +207,17 @@ export const EmployeeForm = ({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Designation <span className="text-red-500">*</span>
           </label>
-          <select
+          <Select
             name="designation_id"
-            value={formData.designation_id}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            value={selectedDesignation}
+            onChange={handleDesignationChange}
+            loadOptions={loadDesignationOptions}
+            defaultOptions
+            cacheOptions
+            className="w-full"
+            classNamePrefix="select"
             required
-          >
-            <option value="">Select Designation</option>
-            {Array.isArray(designations) &&
-              designations.map((designation) => (
-                <option key={designation?.id} value={designation?.id}>
-                  {designation?.name}
-                </option>
-              ))}
-          </select>
+          />
         </div>
 
         <div>
@@ -389,3 +409,4 @@ export const EmployeeForm = ({
     </form>
   );
 };
+

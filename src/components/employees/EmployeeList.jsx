@@ -11,7 +11,6 @@ import { EmployeeForm } from "./EmployeeForm";
 export const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [meta, setMeta] = useState(null);
-  const [designations, setDesignations] = useState([]);
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -31,14 +30,9 @@ export const EmployeeList = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [designationsResponse, branchesResponse] = await Promise.all([
-        designationsApi.getAll(),
+      const [branchesResponse] = await Promise.all([
         branchesApi.getAll(),
       ]);
-
-      if (designationsResponse.success) {
-        setDesignations(designationsResponse?.data);
-      }
 
       if (branchesResponse.success) {
         setBranches(branchesResponse?.data);
@@ -255,7 +249,6 @@ export const EmployeeList = () => {
       >
         <EmployeeForm
           employee={editingEmployee}
-          designations={designations}
           branches={branches}
           onSuccess={handleFormSuccess}
           onCancel={() => setIsModalOpen(false)}
