@@ -214,19 +214,19 @@ export const DailyReport = () => {
         </table>
         <div style="margin-top: 80px; display: flex; justify-content: space-between;">
           <div style="text-align: center;">
-            <p style="border-top: 1px solid #000; padding-top: 5px;">MD</p>
-          </div>
-          <div style="text-align: center;">
-            <p style="border-top: 1px solid #000; padding-top: 5px;">GM</p>
+            <p style="border-top: 1px solid #000; padding-top: 5px;">Prepared by</p>
           </div>
           <div style="text-align: center;">
             <p style="border-top: 1px solid #000; padding-top: 5px;">AGM</p>
           </div>
           <div style="text-align: center;">
-            <p style="border-top: 1px solid #000; padding-top: 5px;">S&M</p>
+            <p style="border-top: 1px solid #000; padding-top: 5px;">DGM</p>
           </div>
           <div style="text-align: center;">
-            <p style="border-top: 1px solid #000; padding-top: 5px;">IT</p>
+            <p style="border-top: 1px solid #000; padding-top: 5px;">GM</p>
+          </div>
+          <div style="text-align: center;">
+            <p style="border-top: 1px solid #000; padding-top: 5px;">MD</p>
           </div>
         </div>
       </body>
