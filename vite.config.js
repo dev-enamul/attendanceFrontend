@@ -7,4 +7,17 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'xlsx': ['xlsx'],
+          'jspdf': ['jspdf', 'jspdf-autotable'],
+          'recharts': ['recharts'],
+          'lucide': ['lucide-react'],
+        },
+      },
+    },
+  },
 });
