@@ -31,7 +31,7 @@ export const EmployeeList = () => {
     try {
       setLoading(true);
       const [branchesResponse] = await Promise.all([
-        branchesApi.getAll(),
+        branchesApi.getAll("", 1000),
       ]);
 
       if (branchesResponse.success) {

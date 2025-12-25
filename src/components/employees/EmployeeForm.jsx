@@ -197,7 +197,7 @@ export const EmployeeForm = ({
             <option value="">Select Branch</option>
             {Array.isArray(branches) &&
               branches.map((branch) => (
-                <option key={branch?.id} value={branch?.id}>
+                <option key={branch?.id} value={branch?.id.toString()}>
                   {branch?.name}
                 </option>
               ))}
