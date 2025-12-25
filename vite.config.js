@@ -16,6 +16,7 @@ export default defineConfig({
           'jspdf': ['jspdf', 'jspdf-autotable'],
           'recharts': ['recharts'],
           'lucide': ['lucide-react'],
+          'react-select': ['react-select'],
         },
       },
     },
